@@ -1,0 +1,49 @@
+[gd_scene format=3 uid="uid://butnqofj4q3ha"]
+
+[ext_resource type="Script" uid="uid://hj76lf4yyhse" path="res://entities/characters/enemies/base_enemy/base_enemy.gd" id="1_nwpjw"]
+[ext_resource type="Texture2D" uid="uid://cifa4cdl01cjh" path="res://icon.svg" id="2_ocmy6"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0lyf5"]
+size = Vector2(12, 15)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_s8d3a"]
+size = Vector2(2, 2)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_qiwvl"]
+radius = 45.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_lq4vf"]
+size = Vector2(12, 16)
+
+[node name="BaseEnemy" type="CharacterBody2D" unique_id=378476062]
+position = Vector2(76, 49)
+collision_layer = 4
+script = ExtResource("1_nwpjw")
+metadata/_edit_group_ = true
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=58493843]
+position = Vector2(-1.9073486e-06, -1.9073486e-06)
+scale = Vector2(0.28, 0.24285714)
+texture = ExtResource("2_ocmy6")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1921766137]
+shape = SubResource("RectangleShape2D_0lyf5")
+
+[node name="FloorCheck" type="ShapeCast2D" parent="." unique_id=605989131]
+position = Vector2(11, 5)
+shape = SubResource("RectangleShape2D_s8d3a")
+target_position = Vector2(0, 4)
+
+[node name="DetectionArea" type="Area2D" parent="." unique_id=533906908]
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea" unique_id=286151223]
+shape = SubResource("CircleShape2D_qiwvl")
+
+[node name="DamageArea" type="Area2D" parent="." unique_id=1076741834]
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DamageArea" unique_id=751388571]
+shape = SubResource("RectangleShape2D_lq4vf")

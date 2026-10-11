@@ -1,0 +1,65 @@
+[gd_scene format=4 uid="uid://cwfh5dyeomf11"]
+
+[ext_resource type="PackedScene" uid="uid://b6da8kw4r514b" path="res://levels/templates/level_platformer_template.tscn" id="1_1yxb1"]
+[ext_resource type="PackedScene" uid="uid://1el24fwt6aww" path="res://entities/environment/portal/portal.tscn" id="2_y2w6s"]
+[ext_resource type="PackedScene" uid="uid://be1u5xewoavi2" path="res://entities/environment/sign/sign.tscn" id="3_u2v7r"]
+[ext_resource type="PackedScene" uid="uid://o4q26osfiusy" path="res://entities/environment/spikes/spikes.tscn" id="4_3nrry"]
+[ext_resource type="Resource" uid="uid://delxhnssok2cx" path="res://assets/dialogues/environment/signs/lvl_1_sign.dialogue" id="4_wxlnt"]
+[ext_resource type="PackedScene" uid="uid://bsnmrcd5to4v4" path="res://entities/characters/npcs/old_man/old_man.tscn" id="5_3nrry"]
+[ext_resource type="PackedScene" uid="uid://dgqqjsqlm0ivv" path="res://entities/pickups/currency/sugar_cube/sugar_cube.tscn" id="7_vry7j"]
+[ext_resource type="PackedScene" uid="uid://cq1f0f7t0fu8y" path="res://entities/pickups/weapons/pan/Pan.tscn" id="8_w2p7p"]
+[ext_resource type="PackedScene" uid="uid://y0qgb610f7fx" path="res://entities/characters/enemies/test_enemy/test_enemy.tscn" id="9_m2opk"]
+
+[node name="LevelPlatformerTemplate" unique_id=2086354120 instance=ExtResource("1_1yxb1")]
+
+[node name="SpawnPoint" parent="." index="0" unique_id=183350171]
+position = Vector2(12, 99)
+
+[node name="TileMapLayer" parent="." index="1" unique_id=1920565257]
+texture_filter = 1
+tile_map_data = PackedByteArray("AAAAAAoAAAABAAAAAAABAAoAAAABAAAAAAACAAoAAAABAAAAAAADAAoAAAABAAAAAAAEAAoAAAABAAAAAAAFAAoAAAABAAAAAAAGAAoAAAABAAAAAAAHAAoAAAABAAAAAAAIAAoAAAABAAAAAAAJAAoAAAABAAAAAAAKAAoAAAABAAAAAAALAAoAAAABAAAAAAAMAAoAAAABAAAAAAANAAoAAAABAAAAAAAOAAoAAAABAAAAAAAPAAoAAAABAAAAAAAQAAoAAAABAAAAAAARAAoAAAABAAAAAAASAAoAAAABAAAAAAATAAoAAAABAAAAAAAIAAgAAAABAAAAAAAJAAkAAAABAAAAAAATAAcAAAABAAAAAAATAAgAAAABAAAAAAATAAkAAAABAAAAAAALAAUAAAABAAAAAAAMAAUAAAABAAAAAAANAAUAAAABAAAAAAAOAAUAAAABAAAAAAATAAYAAAABAAAAAAATAAUAAAABAAAAAAATAAQAAAABAAAAAAATAAMAAAABAAAAAAATAAIAAAABAAAAAAATAAEAAAABAAAAAAATAAAAAAABAAAAAAASAAAAAAABAAAAAAARAAAAAAABAAAAAAAQAAAAAAABAAAAAAAPAAAAAAABAAAAAAAOAAAAAAABAAAAAAANAAAAAAABAAAAAAAMAAAAAAABAAAAAAALAAAAAAABAAAAAAAKAAAAAAABAAAAAAAJAAAAAAABAAAAAAAIAAAAAAABAAAAAAAHAAAAAAABAAAAAAAGAAAAAAABAAAAAAAFAAAAAAABAAAAAAAEAAAAAAABAAAAAAADAAAAAAABAAAAAAACAAAAAAABAAAAAAABAAAAAAABAAAAAAAAAAAAAAABAAAAAAD//wAAAAABAAAAAAAAAAkAAAABAAAAAAAAAAgAAAABAAAAAAAAAAcAAAABAAAAAAAAAAUAAAABAAAAAAAAAAQAAAABAAAAAAAAAAMAAAABAAAAAAAAAAIAAAABAAAAAAAAAAEAAAABAAAAAAADAAMAAAABAAAAAAADAAQAAAABAAAAAAAEAAUAAAABAAAAAAAQAAIAAAABAAAAAAASAAcAAAABAAAAAAAOAAcAAAABAAAAAAABAAcAAAABAAAAAAAHAAQAAAABAAAAAAAIAAQAAAABAAAAAAAQAAkAAAABAAAAAAAPAAcAAAABAAAAAAARAAkAAAABAAAAAAD//wYAAAABAAAAAAA=")
+
+[node name="Portal" parent="." index="3" unique_id=1296805079 instance=ExtResource("2_y2w6s")]
+position = Vector2(63, 40)
+target_level_path = "uid://byt4l34jmxlsm"
+
+[node name="Sign" parent="." index="4" unique_id=927737693 instance=ExtResource("3_u2v7r")]
+position = Vector2(226, 73)
+dialogue_resource = ExtResource("4_wxlnt")
+dialogue_title = "village"
+
+[node name="Spikes" parent="." index="5" unique_id=69060913 instance=ExtResource("4_3nrry")]
+position = Vector2(196, 154)
+
+[node name="BaseNPC" parent="." index="6" unique_id=381813978 instance=ExtResource("5_3nrry")]
+position = Vector2(105, 139)
+dialogue_title = null
+
+[node name="Node" type="Node" parent="." index="7" unique_id=1613546425]
+
+[node name="SugarCube4" parent="Node" index="0" unique_id=1411211640 instance=ExtResource("7_vry7j")]
+position = Vector2(106, 296)
+pickup_id = ""
+
+[node name="SugarCube2" parent="Node" index="1" unique_id=2038254991 instance=ExtResource("7_vry7j")]
+position = Vector2(222, 151)
+amount = 9
+pickup_id = "02_sug_lvl_1"
+
+[node name="SugarCube" parent="Node" index="2" unique_id=1883204059 instance=ExtResource("7_vry7j")]
+position = Vector2(82, 153)
+pickup_id = "01_sug_lvl_1"
+
+[node name="SugarCube3" parent="Node" index="3" unique_id=2143284431 instance=ExtResource("7_vry7j")]
+position = Vector2(53, 148)
+
+[node name="Pan" parent="Node" index="4" unique_id=1207583157 instance=ExtResource("8_w2p7p")]
+position = Vector2(131, 55)
+
+[node name="BaseEnemy" parent="Node" index="5" unique_id=378476062 instance=ExtResource("9_m2opk")]
+position = Vector2(82, 153)
+loot = Array[PackedScene]([ExtResource("7_vry7j")])
+
+[node name="SugarCube5" parent="Node" index="6" unique_id=2109404345 instance=ExtResource("7_vry7j")]
+position = Vector2(212, 592)
+pickup_id = ""

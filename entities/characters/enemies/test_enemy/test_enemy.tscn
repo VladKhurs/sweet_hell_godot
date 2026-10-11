@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://y0qgb610f7fx"]
+
+[ext_resource type="PackedScene" uid="uid://butnqofj4q3ha" path="res://entities/characters/enemies/base_enemy/base_enemy.tscn" id="1_cruag"]
+[ext_resource type="Texture2D" uid="uid://cifa4cdl01cjh" path="res://icon.svg" id="2_xodnm"]
+
+[node name="BaseEnemy" unique_id=378476062 instance=ExtResource("1_cruag")]
+enemy_id = &"real_enemy"
+enemy_name = "Enemy"
+enemy_sprite = ExtResource("2_xodnm")

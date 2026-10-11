@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://c1mw7bq0e3jci"]
+
+[ext_resource type="Script" uid="uid://fe557in52wxw" path="res://core/systems/rhythm_engine/rhythm_engine.gd" id="1_porcw"]
+[ext_resource type="AudioStream" uid="uid://bydqhq6l5feyq" path="res://assets/sounds/beat.mp3" id="2_ch7uo"]
+
+[node name="RhythmEngine" type="CanvasLayer" unique_id=1644448664]
+script = ExtResource("1_porcw")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=133219014]
+stream = ExtResource("2_ch7uo")
+
+[node name="FlashOverlay" type="ColorRect" parent="." unique_id=985026184]
+anchors_preset = -1
+anchor_left = 0.531
+anchor_top = 0.878
+anchor_right = 0.531
+anchor_bottom = 0.878
+offset_left = -19.920013
+offset_top = -20.040009
+offset_right = 20.079987
+offset_bottom = 19.959991

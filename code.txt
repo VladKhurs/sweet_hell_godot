@@ -1,0 +1,1369 @@
+>>!>FILEPATH: ./.gitattributes
+# Normalize EOL for all files that Git considers text files.
+* text=auto eol=lf
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./.editorconfig
+root = true
+
+[*]
+charset = utf-8
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./script_templates/.gdignore
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./script_templates/BeehaveNode/default.gd
+# meta-name: Default
+# meta-default: true
+extends _BASE_
+
+
+func tick(actor: Node, blackboard: Blackboard) -> int:
+	return SUCCESS
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./levels/templates/base_level/base_level.gd
+extends Node2D
+
+@export_enum("free", "grid", "beat", "platformer") var level_mode: String = "free"
+
+const PLAYER_SCENE = preload("res://entities/characters/player/player.tscn")
+
+
+func _ready():
+	GameState.set_location(scene_file_path)	
+	setup_level()
+
+
+func _enter_tree() -> void:
+	GameState.set_mode(level_mode)
+
+
+func setup_level():
+	var player = get_tree().root.find_child("Player", true, false)
+	
+	if not player:
+		player = PLAYER_SCENE.instantiate()
+		add_child(player)
+	
+	var spawn_point = $SpawnPoint
+	if spawn_point:
+		player.global_position = spawn_point.global_position
+	
+	if player.has_method("change_movement_mode"):
+		player.change_movement_mode(level_mode)
+		
+	if player.has_method("set_controls_enabled"):
+		player.set_controls_enabled(true)
+		
+	if level_mode == "beat":
+		$RhythmEngine.play_music()
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./levels/templates/novel_level/novel_level.gd
+extends Control
+class_name NovelLevel
+
+@export_category("Story & Progression")
+@export var novel_id: String = ""
+@export var dialogue_resource: DialogueResource
+@export var dialogue_title: String = "start"
+@export_file("*.tscn") var next_level_path: String = ""
+@export var skip_if_already_read: bool = false
+
+@export_category("Visuals")
+@export_dir var images_folder: String = "res://assets/images/"
+@export var default_background: Texture2D
+@export var transition_duration: float = 0.4
+
+@onready var bg_current: TextureRect = $BackgroundCurrent
+@onready var bg_next: TextureRect = $BackgroundNext
+
+var _fade_tween: Tween
+var _current_bg_key: String = ""
+
+func _ready() -> void:
+	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+
+	if skip_if_already_read and not novel_id.is_empty() and GameState.get_world_state(novel_id, "completed") == true:
+		_go_to_next_level()
+		return
+
+	if default_background:
+		bg_current.texture = default_background
+
+	if not dialogue_resource:
+		push_error("[Novel] dialogue_resource не назначен!")
+		return
+
+	DialogueManager.got_dialogue.connect(_on_got_dialogue)
+	DialogueManager.dialogue_ended.connect(_on_dialogue_ended)
+	DialogueManager.show_dialogue_balloon(dialogue_resource, dialogue_title, [self])
+
+func set_bg(image_name: String) -> void:
+	if image_name.is_empty() or image_name == _current_bg_key: return
+	var tex := _find_texture(image_name)
+	if not tex:
+		push_error("[Novel] Картинка '%s' не найдена!" % image_name)
+		return
+
+	_current_bg_key = image_name
+	if transition_duration <= 0.0:
+		bg_current.texture = tex
+		return
+
+	if _fade_tween and _fade_tween.is_valid():
+		_fade_tween.kill()
+
+	bg_next.texture = tex
+	bg_next.modulate.a = 0.0
+	_fade_tween = create_tween()
+	_fade_tween.tween_property(bg_next, "modulate:a", 1.0, transition_duration)
+	_fade_tween.tween_callback(func():
+		bg_current.texture = tex
+		bg_next.modulate.a = 0.0
+		bg_next.texture = null
+	)
+
+func _find_texture(file_name: String) -> Texture2D:
+	var dirs: Array[String] = [images_folder, "res://assets/images/", "res://assets/"]
+	if dialogue_resource:
+		dirs.append(dialogue_resource.resource_path.get_base_dir())
+
+	for d in dirs:
+		var base_path: String = d.path_join(file_name)
+		for ext: String in ["", ".png", ".webp", ".jpg"]:
+			var full_path: String = base_path + ext
+			if ResourceLoader.exists(full_path):
+				return load(full_path) as Texture2D
+	return null
+
+func _on_got_dialogue(line: DialogueLine) -> void:
+	if line.has_tag("bg"):
+		set_bg(line.get_tag_value("bg"))
+
+func _on_dialogue_ended(resource: DialogueResource) -> void:
+	if resource != dialogue_resource: return
+	if not novel_id.is_empty():
+		GameState.set_world_state(novel_id, "completed", true)
+	_go_to_next_level()
+
+func _go_to_next_level() -> void:
+	if next_level_path.is_empty(): return
+	if DialogueManager.got_dialogue.is_connected(_on_got_dialogue):
+		DialogueManager.got_dialogue.disconnect(_on_got_dialogue)
+	if DialogueManager.dialogue_ended.is_connected(_on_dialogue_ended):
+		DialogueManager.dialogue_ended.disconnect(_on_dialogue_ended)
+	Game.load_level(next_level_path)
+	
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./levels/cutscenes/base_cutscene.gd
+extends Node2D
+class_name BaseCutscene
+
+@export_file("*.tscn") var next_level_path: String = ""
+
+
+func _ready() -> void:
+	_run()
+
+
+func _run() -> void:
+	pass
+
+
+func finish() -> void:
+	if not next_level_path.is_empty():
+		Game.load_level(next_level_path)
+	else:
+		# Остаемся на этом же уровне — просто отдаем игроку управление:
+		var player = get_tree().root.find_child("Player", true, false)
+		if player and player.has_method("set_controls_enabled"):
+			player.set_controls_enabled(true)
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./levels/cutscenes/walk_cutscene.gd
+extends Node
+class_name WalkCutscene
+
+@export var walk_distance: float = 120.0
+@export var walk_time: float = 2.5
+@export var lumi: Node2D
+@export var wall: Node2D
+
+func _ready() -> void:
+	await get_tree().process_frame
+	var choice := GameState.story_point
+	if choice.is_empty():
+		return
+
+	GameState.set_story_point("")
+	_run_cutscene(choice)
+
+func _run_cutscene(choice: String) -> void:
+	var player = get_tree().get_first_node_in_group("player")
+	if not player:
+		player = get_tree().root.find_child("Player", true, false)
+	if not player:
+		return
+
+	if not lumi: lumi = get_tree().root.find_child("Lumi", true, false)
+	if not wall: wall = get_tree().root.find_child("Wall", true, false)
+
+	player.set_controls_enabled(false)
+	player.set_process(false)
+
+	if wall:
+		_set_wall_active(false)
+
+	if choice == "walk-together":
+		player.anim.flip_h = true
+		player.anim.play("walk")
+		if lumi and lumi.has_method("play_walk"): lumi.play_walk(true)
+
+		var tween := create_tween().set_parallel(true)
+		tween.tween_property(player, "global_position:x", player.global_position.x - walk_distance, walk_time)
+		if lumi:
+			tween.tween_property(lumi, "global_position:x", lumi.global_position.x - walk_distance, walk_time)
+		await tween.finished
+
+		player.anim.play("idle")
+		if lumi and lumi.has_method("play_idle"): lumi.play_idle(true)
+	else:
+		if lumi and lumi.has_method("play_walk"): lumi.play_walk(true)
+		if lumi:
+			var tween := create_tween()
+			tween.tween_property(lumi, "global_position:x", lumi.global_position.x - walk_distance - 50.0, walk_time)
+			await tween.finished
+			if lumi.has_method("play_idle"): lumi.play_idle(true)
+		if wall:
+			_set_wall_active(true)
+
+	player.set_process(true)
+	player.set_controls_enabled(true)
+
+func _set_wall_active(active: bool) -> void:
+	wall.visible = active
+	var col = wall.get_node_or_null("CollisionShape2D")
+	if col:
+		col.set_deferred("disabled", not active)
+		
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./widgets/hud/hud.gd
+extends CanvasLayer
+
+@onready var hearts_container: HBoxContainer = $HBoxContainer
+@onready var dialogue_box: Control = $DialogueBox
+@onready var dialogue_label: Label = $DialogueBox/DialogueLabel
+@onready var interaction_label: Control = $InteractionLabel
+@onready var touch_controls: Control = $TouchControls
+@onready var toggle_button: Button = $ToggleTouchButton
+
+func _ready() -> void:
+	Game.health_changed.connect(update_hearts)
+	update_hearts(Game.current_health)
+	if toggle_button:
+		toggle_button.pressed.connect(func(): touch_controls.visible = not touch_controls.visible)
+	if touch_controls:
+		touch_controls.visible = true
+
+func update_hearts(health: int) -> void:
+	var hearts := hearts_container.get_children()
+	for i in hearts.size():
+		hearts[i].visible = i < health
+
+func show_message(text: String) -> void:
+	dialogue_label.text = text
+	dialogue_box.show()
+	await get_tree().create_timer(3.0).timeout
+	dialogue_box.hide()
+
+func set_interaction_visible(value: bool) -> void:
+	interaction_label.visible = value
+	
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./widgets/hud/touch/move_joystick.gd
+extends Control
+class_name MoveJoystick
+
+@export var max_radius: float = 40.0
+@export var deadzone: float = 0.15
+@export var jump_threshold: float = 0.45
+@export var jump_action: StringName = &"ui_accept"
+@export var default_offset: Vector2 = Vector2(110.0, 110.0)
+
+@export var base_color: Color = Color(1, 1, 1, 0.2)
+@export var border_color: Color = Color(1, 1, 1, 0.5)
+@export var knob_color: Color = Color(1, 1, 1, 0.6)
+
+var touch_id: int = -1
+var base_pos: Vector2
+var knob_offset: Vector2 = Vector2.ZERO
+var is_touched: bool = false
+
+func _ready() -> void:
+	mouse_filter = Control.MOUSE_FILTER_STOP
+	base_pos = _get_default_pos()
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_RESIZED and not is_touched:
+		base_pos = _get_default_pos()
+		queue_redraw()
+
+func _get_default_pos() -> Vector2:
+	return Vector2(default_offset.x, size.y - default_offset.y)
+
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventScreenTouch:
+		if event.pressed and touch_id == -1:
+			touch_id = event.index
+			is_touched = true
+			base_pos = event.position
+			knob_offset = Vector2.ZERO
+		elif not event.pressed and event.index == touch_id:
+			_reset_joystick()
+		queue_redraw()
+	elif event is InputEventScreenDrag and event.index == touch_id:
+		knob_offset = (event.position - base_pos).limit_length(max_radius)
+		_apply_input(knob_offset / max_radius)
+		queue_redraw()
+
+func _draw() -> void:
+	var center := base_pos if is_touched else _get_default_pos()
+	draw_circle(center, max_radius, base_color)
+	draw_arc(center, max_radius, 0, TAU, 32, border_color, 2.0)
+	draw_circle(center + knob_offset, max_radius * 0.4, knob_color)
+
+func _apply_input(vec: Vector2) -> void:
+	var strength := clampf((vec.length() - deadzone) / (0.85 - deadzone), 0.0, 0.85) if vec.length() > deadzone else 0.0
+	var norm := vec.normalized() * strength
+	_set_axis("ui_left", "ui_right", norm.x)
+	_set_axis("ui_up", "ui_down", norm.y)
+
+	var should_jump := GameState.current_mode == &"platformer" and vec.y < -jump_threshold
+	Input.action_press(jump_action) if should_jump else Input.action_release(jump_action)
+
+func _set_axis(neg: StringName, pos: StringName, val: float) -> void:
+	if val > 0.05:
+		Input.action_press(pos, val)
+		Input.action_release(neg)
+	elif val < -0.05:
+		Input.action_press(neg, -val)
+		Input.action_release(pos)
+	else:
+		Input.action_release(neg)
+		Input.action_release(pos)
+
+func _reset_joystick() -> void:
+	touch_id = -1
+	is_touched = false
+	knob_offset = Vector2.ZERO
+	base_pos = _get_default_pos()
+	for action in [&"ui_left", &"ui_right", &"ui_up", &"ui_down", jump_action]:
+		Input.action_release(action)
+	queue_redraw()
+	
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./widgets/hud/touch/touch_button.gd
+extends Button
+class_name TouchButton
+
+@export var action_name: StringName = &"ui_attack"
+
+var touch_id: int = -1
+
+
+func _ready() -> void:
+	action_mode = BaseButton.ACTION_MODE_BUTTON_PRESS
+
+
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventScreenTouch:
+		if event.pressed and touch_id == -1:
+			touch_id = event.index
+			_send_action(true)
+		elif not event.pressed and event.index == touch_id:
+			touch_id = -1
+			_send_action(false)
+
+
+func _send_action(is_pressed: bool) -> void:
+	var ev = InputEventAction.new()
+	ev.action = action_name
+	ev.pressed = is_pressed
+	Input.parse_input_event(ev)
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./entities/pickups/base_pickup.gd
+extends Area2D
+class_name BasePickup
+
+@export_category("Pickup")
+@export var pickup_id: String = ""
+var _picked_up: bool = false
+
+func _ready() -> void:
+	if not pickup_id.is_empty() and GameState.get_world_state(pickup_id, "collected") == true:
+		queue_free()
+
+func interact(interactor: Node) -> void:
+	if _picked_up or not collect(interactor):
+		return
+
+	_picked_up = true
+	if not pickup_id.is_empty():
+		GameState.set_world_state(pickup_id, "collected", true)
+
+	Inventory.print_inventory()
+	queue_free()
+
+func collect(_interactor: Node) -> bool:
+	return false
+	
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./entities/pickups/currency/currency_pickup.gd
+extends BasePickup
+class_name CurrencyPickup
+
+
+@export_category("Currency")
+@export var currency_id: String = ""
+@export_range(1, 100000, 1) var amount: int = 1
+
+
+func collect(_interactor: Node) -> bool:
+	if currency_id.is_empty():
+		push_warning("%s: currency_id не указан" % name)
+		return false
+
+	Inventory.add_currency(currency_id, amount)
+
+	return true
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./entities/pickups/weapons/weapon_pickup.gd
+extends BasePickup
+class_name WeaponPickup
+
+
+@export_category("Weapon")
+@export var weapon_data: WeaponData
+
+
+func _ready() -> void:
+	super()
+
+	if is_queued_for_deletion():
+		return
+
+	if weapon_data == null:
+		return
+
+	var sprite := get_node_or_null("Sprite2D") as Sprite2D
+
+	if sprite:
+		sprite.texture = weapon_data.sprite
+
+
+func collect(_interactor: Node) -> bool:
+	if weapon_data == null:
+		push_warning("%s: weapon_data не назначен" % name)
+		return false
+
+	if Inventory.has_weapon(weapon_data.weapon_id):
+		return false
+	
+	return Inventory.add_weapon(weapon_data)
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./entities/pickups/weapons/weapon_data.gd
+extends Resource
+class_name WeaponData
+
+
+@export_category("Weapon")
+@export var weapon_id: StringName
+@export var weapon_name: String = ""
+@export var sprite: Texture2D
+
+@export_category("Combat")
+@export_range(0, 100000, 1) var damage: int = 1
+@export_range(0.0, 1000.0, 1.0) var attack_range: float = 16.0
+@export_range(0.0, 60.0, 0.05) var attack_cooldown: float = 1.0
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./entities/pickups/weapons/pan/pan.tres
+[gd_resource type="Resource" script_class="WeaponData" format=3 uid="uid://crhjhglmrw4vl"]
+
+[ext_resource type="Script" uid="uid://dq5wup7vfjqgq" path="res://entities/pickups/weapons/weapon_data.gd" id="1_liuvo"]
+[ext_resource type="Texture2D" uid="uid://cifa4cdl01cjh" path="res://icon.svg" id="2_8l0co"]
+
+[resource]
+script = ExtResource("1_liuvo")
+weapon_id = &"pan"
+weapon_name = "Pan"
+sprite = ExtResource("2_8l0co")
+attack_range = 18.0
+attack_cooldown = 0.2
+metadata/_custom_type_script = "uid://dq5wup7vfjqgq"
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./entities/characters/player/player.gd
+extends CharacterBody2D
+
+@onready var movements: Node = $Movements
+@onready var camera: Camera2D = $Camera2D
+@onready var interaction_area: Area2D = $InteractionArea
+@onready var anim: AnimatedSprite2D = $AnimatedSprite2D
+@onready var hud: CanvasLayer = get_tree().root.find_child("HUD", true, false)
+@onready var attack_area: Area2D = $AttackArea
+@onready var attack_shape: CollisionShape2D = $AttackArea/CollisionShape2D
+@onready var weapon_pivot: Node2D = $WeaponPivot
+@onready var weapon_sprite: Sprite2D = $WeaponPivot/WeaponSprite
+
+@export var attack_visual_time: float = 0.12
+@export var attack_recoil_force: float = 120.0
+@export var attack_recoil_x: float = 100.0
+@export var attack_recoil_y: float = -40.0
+
+var current_movement: Node = null
+var controls_enabled: bool = true
+var last_attack_time: float = -INF
+var facing_direction: float = 1.0
+var weapon_tween: Tween
+
+func _ready() -> void:
+	Inventory.changed.connect(_update_attack_area)
+	Game.player_damaged.connect(_on_damaged)
+	change_movement_mode(GameState.current_mode)
+	_update_attack_area()
+
+func _physics_process(delta: float) -> void:
+	if controls_enabled and current_movement:
+		current_movement.execute(delta)
+
+func _process(_delta: float) -> void:
+	_update_animations()
+	if hud:
+		hud.set_interaction_visible(has_interactable_nearby())
+
+func _input(event: InputEvent) -> void:
+	if not controls_enabled: return
+	if event.is_action_pressed("ui_interact"):
+		check_interaction()
+	elif event.is_action_pressed("ui_attack"):
+		attack()
+
+func set_controls_enabled(value: bool) -> void:
+	controls_enabled = value
+	if not controls_enabled:
+		velocity = Vector2.ZERO
+		if current_movement and current_movement.has_method("stop_movement"):
+			current_movement.stop_movement()
+
+func change_movement_mode(mode_name: String) -> void:
+	for child in movements.get_children():
+		child.enabled = false
+
+	var target = movements.get_node_or_null(mode_name)
+	if target:
+		current_movement = target
+		current_movement.enabled = true
+		GameState.set_mode(mode_name)
+		velocity = Vector2.ZERO
+		if (mode_name == "grid" or mode_name == "beat") and current_movement.has_method("snap_to_grid_center"):
+			current_movement.snap_to_grid_center()
+
+	var target_offset := -15.0 if mode_name == "platformer" else 0.0
+	create_tween().tween_property(camera, "offset:y", target_offset, 0.3).set_ease(Tween.EASE_OUT)
+
+func check_interaction() -> void:
+	var closest: Node2D = null
+	var closest_dist := INF
+	var items = interaction_area.get_overlapping_bodies() + interaction_area.get_overlapping_areas()
+
+	for item in items:
+		if item.has_method("interact"):
+			var d := global_position.distance_squared_to(item.global_position)
+			if d < closest_dist:
+				closest = item
+				closest_dist = d
+
+	if closest:
+		closest.interact(self)
+
+func has_interactable_nearby() -> bool:
+	for item in (interaction_area.get_overlapping_bodies() + interaction_area.get_overlapping_areas()):
+		if item.has_method("interact"):
+			return true
+	return false
+
+func knockback(direction: Vector2) -> void:
+	velocity = direction * 150.0
+	move_and_slide()
+
+func set_horizontal_facing(dir: float) -> void:
+	if is_zero_approx(dir): return
+	facing_direction = signf(dir)
+	anim.flip_h = facing_direction < 0.0
+	_update_attack_area()
+
+func _update_animations() -> void:
+	if current_movement and current_movement.name == "platformer" and not is_on_floor():
+		anim.play("jump")
+	elif velocity.length() > 10.0:
+		anim.play("walk")
+	else:
+		anim.play("idle")
+
+func _on_damaged() -> void:
+	anim.modulate = Color.RED
+	create_tween().tween_property(anim, "modulate", Color.WHITE, 0.2)
+
+func _update_attack_area() -> void:
+	var weapon := Inventory.get_equipped_weapon()
+	if not weapon: return
+
+	var shape := attack_shape.shape as CircleShape2D
+	if shape:
+		shape.radius = weapon.attack_range * 0.5
+	attack_area.position.x = weapon.attack_range * 0.5 * facing_direction
+
+func attack() -> void:
+	if GameState.current_mode != &"platformer": return
+	var weapon := Inventory.get_equipped_weapon()
+	if not weapon: return
+
+	var now := Time.get_ticks_msec() / 1000.0
+	if now - last_attack_time < weapon.attack_cooldown: return
+	last_attack_time = now
+
+	_play_attack_visual(weapon)
+	
+	var hit: bool = false
+	for body in attack_area.get_overlapping_bodies():
+		if body == self:
+			continue
+		
+		if body.has_method("take_damage"):
+			body.take_damage(weapon.damage)
+			if body.has_method("knockback"):
+				body.knockback((body.global_position - global_position).normalized())
+			hit = true
+		elif body is StaticBody2D or body is TileMap or body is TileMapLayer:
+			hit = true
+
+	if hit:
+		velocity.x = -facing_direction * attack_recoil_x
+		velocity.y = attack_recoil_y
+		move_and_slide()
+
+	if hit:
+		velocity.x = -facing_direction * attack_recoil_force
+		move_and_slide()
+
+
+func _play_attack_visual(weapon: WeaponData) -> void:
+	if weapon_tween and weapon_tween.is_valid():
+		weapon_tween.kill()
+
+	weapon_sprite.texture = weapon.sprite
+	weapon_sprite.visible = true
+	weapon_pivot.scale.x = facing_direction
+	weapon_pivot.rotation_degrees = -60.0 * facing_direction
+
+	weapon_tween = create_tween()
+	weapon_tween.tween_property(weapon_pivot, "rotation_degrees", 45.0 * facing_direction, attack_visual_time)
+	weapon_tween.tween_callback(func():
+		weapon_sprite.visible = false
+		weapon_pivot.rotation_degrees = 0.0
+	)
+	
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./entities/characters/player/movement_logic/free_movement.gd
+extends Node
+
+@onready var player = get_parent().get_parent() # Ссылка на CharacterBody2D
+@export var speed: float = 110.0
+var enabled: bool = false
+
+func execute(_delta):
+	if not enabled: return
+	
+	var direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+	
+	player.velocity = direction * speed
+	player.move_and_slide()
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./entities/characters/player/movement_logic/beat_movement.gd
+extends GridMovement
+
+@export var window_time: float = 0.25
+var can_move_now: bool = false
+
+func _ready() -> void:
+	var engine = get_tree().root.find_child("RhythmEngine", true, false)
+	if engine:
+		engine.beat.connect(_on_beat)
+
+func _on_beat(_index: int) -> void:
+	can_move_now = true
+	get_tree().create_timer(window_time).timeout.connect(func(): can_move_now = false)
+
+func attempt_move(direction: Vector2) -> void:
+	if can_move_now:
+		super.attempt_move(direction)
+	else:
+		_fail_feedback()
+
+func _fail_feedback() -> void:
+	sprite.modulate = Color.RED
+	shake_sprite()
+	get_tree().create_timer(0.15).timeout.connect(func(): sprite.modulate = Color.WHITE)
+	
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./entities/characters/player/movement_logic/platformer_movement.gd
+extends Node
+
+@onready var player: CharacterBody2D = get_parent().get_parent()
+
+@export var speed: float = 120.0
+@export var acceleration: float = 1000.0
+@export var friction: float = 1200.0
+
+@export var jump_velocity: float = -215.0
+@export var gravity: float = 600.0
+@export var fall_gravity_multiplier: float = 1.1
+@export var max_fall_speed: float = 360.0
+
+@export var coyote_time: float = 0.10
+@export var jump_buffer_time: float = 0.10
+@export var jump_cut: float = 0.38
+
+var enabled: bool = false
+var coyote_timer: float = 0.0
+var jump_buffer_timer: float = 0.0
+
+func execute(delta: float) -> void:
+	if not enabled: return
+
+	coyote_timer = coyote_time if player.is_on_floor() else maxf(coyote_timer - delta, 0.0)
+	if Input.is_action_just_pressed("ui_accept"):
+		jump_buffer_timer = jump_buffer_time
+	else:
+		jump_buffer_timer = maxf(jump_buffer_timer - delta, 0.0)
+
+	if jump_buffer_timer > 0.0 and coyote_timer > 0.0:
+		player.velocity.y = jump_velocity
+		coyote_timer = 0.0
+		jump_buffer_timer = 0.0
+	elif Input.is_action_just_released("ui_accept") and player.velocity.y < 0.0:
+		player.velocity.y *= jump_cut
+
+	if not player.is_on_floor():
+		var cur_gravity := gravity * (fall_gravity_multiplier if player.velocity.y > 0.0 else 1.0)
+		player.velocity.y = minf(player.velocity.y + cur_gravity * delta, max_fall_speed)
+
+	var dir := Input.get_axis("ui_left", "ui_right")
+	if dir != 0.0:
+		player.velocity.x = move_toward(player.velocity.x, dir * speed, acceleration * delta)
+		player.set_horizontal_facing(dir)
+	else:
+		player.velocity.x = move_toward(player.velocity.x, 0.0, friction * delta)
+
+	player.move_and_slide()
+	
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./entities/characters/player/movement_logic/grid_movement.gd
+extends Node
+class_name GridMovement
+
+@onready var player: CharacterBody2D = get_parent().get_parent()
+@onready var sprite: AnimatedSprite2D = player.get_node("AnimatedSprite2D")
+
+@export var tile_size: int = 16
+@export var move_speed: float = 0.15
+@export var cell_center_offset: Vector2 = Vector2(8, 8)
+
+var is_moving: bool = false
+var enabled: bool = false
+var move_tween: Tween
+
+func execute(_delta: float) -> void:
+	if not enabled or is_moving: return
+
+	var dir := Vector2.ZERO
+	if Input.is_action_just_pressed("ui_right"): dir = Vector2.RIGHT
+	elif Input.is_action_just_pressed("ui_left"): dir = Vector2.LEFT
+	elif Input.is_action_just_pressed("ui_up"): dir = Vector2.UP
+	elif Input.is_action_just_pressed("ui_down"): dir = Vector2.DOWN
+
+	if dir != Vector2.ZERO:
+		if dir.x != 0:
+			sprite.flip_h = dir.x < 0
+		attempt_move(dir)
+
+func snap_to_grid_center() -> void:
+	var size := float(tile_size)
+	player.global_position = Vector2(
+		round((player.global_position.x - cell_center_offset.x) / size) * size + cell_center_offset.x,
+		round((player.global_position.y - cell_center_offset.y) / size) * size + cell_center_offset.y
+	)
+	player.velocity = Vector2.ZERO
+	player.reset_physics_interpolation()
+
+func attempt_move(dir: Vector2) -> void:
+	if player.test_move(player.global_transform, dir * tile_size):
+		shake_sprite()
+		return
+
+	is_moving = true
+	move_tween = get_tree().create_tween()
+	move_tween.tween_property(player, "global_position", player.global_position + dir * tile_size, move_speed)\
+		.set_trans(Tween.TRANS_QUART).set_ease(Tween.EASE_OUT)
+	move_tween.parallel().tween_property(sprite, "scale", Vector2(0.5, 0.45), move_speed * 0.5)
+	move_tween.chain().tween_property(sprite, "scale", Vector2(0.5, 0.5), move_speed * 0.5)
+	move_tween.finished.connect(func(): is_moving = false)
+
+func shake_sprite() -> void:
+	var tween := get_tree().create_tween()
+	tween.tween_property(sprite, "position:x", 5.0, 0.05)
+	tween.tween_property(sprite, "position:x", -5.0, 0.05)
+	tween.tween_property(sprite, "position:x", 0.0, 0.05)
+
+func stop_movement() -> void:
+	if move_tween and move_tween.is_valid():
+		move_tween.kill()
+	is_moving = false
+	player.velocity = Vector2.ZERO
+	
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./entities/characters/enemies/base_enemy/enemy_data.gd
+extends Resource
+class_name EnemyData
+
+
+@export_category("Enemy")
+@export var enemy_id: StringName
+@export var enemy_name: String = ""
+@export var sprite: Texture2D
+
+@export_category("Stats")
+@export_range(0.0, 500.0, 1.0) var speed: float = 30.0
+@export_range(1, 1000, 1) var max_health: int = 3
+@export_range(0, 1000, 1) var damage: int = 1
+
+@export_category("Loot")
+@export var loot: Array[PackedScene] = []
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./entities/characters/enemies/base_enemy/base_enemy.gd
+extends CharacterBody2D
+class_name BaseEnemy
+
+enum State { PATROL, CHASE }
+
+@export_category("Enemy")
+@export var enemy_id: StringName
+@export var enemy_name: String = ""
+@export var enemy_sprite: Texture2D
+
+@export_category("Stats")
+@export var speed: float = 30.0
+@export var max_health: int = 3
+@export var damage: int = 1
+@export var gravity: float = 600.0
+
+@export_category("Chase")
+@export var chase_stop_distance: float = 8.0
+
+@export_category("Loot")
+@export var loot: Array[PackedScene] = []
+
+@export_category("Knockback")
+@export var knockback_force: float = 90.0
+@export var knockback_upward_force: float = 40.0
+@export var knockback_time: float = 0.15
+
+@onready var sprite: Sprite2D = $Sprite2D
+@onready var floor_check: ShapeCast2D = $FloorCheck
+@onready var detection_area: Area2D = $DetectionArea
+@onready var damage_area: Area2D = $DamageArea
+
+var player_in_damage_area: Node2D = null
+var current_health: int
+var state: State = State.PATROL
+var move_direction: float = 1.0
+var target: Node2D = null
+var is_dead: bool = false
+var is_knocked_back: bool = false
+
+func _ready() -> void:
+	current_health = max_health
+	sprite.texture = enemy_sprite
+	detection_area.body_entered.connect(func(b): if b.is_in_group("player"): target = b; state = State.CHASE)
+	detection_area.body_exited.connect(func(b): if b == target: target = null; state = State.PATROL)
+	damage_area.body_entered.connect(_on_damage_body_entered)
+	damage_area.body_exited.connect(func(b): if b == player_in_damage_area: player_in_damage_area = null)
+	Game.invulnerability_ended.connect(_try_damage_player)
+
+func _physics_process(delta: float) -> void:
+	if GameState.current_mode != &"platformer":
+		velocity = Vector2.ZERO
+		return
+
+	if not is_on_floor():
+		velocity.y += gravity * delta
+
+	if is_knocked_back:
+		move_and_slide()
+		return
+
+	match state:
+		State.PATROL:
+			if not _has_floor_ahead(move_direction) or is_on_wall():
+				_set_direction(-move_direction)
+			velocity.x = move_direction * speed
+
+		State.CHASE:
+			if not is_instance_valid(target):
+				state = State.PATROL
+			else:
+				var dx := target.global_position.x - global_position.x
+				if absf(dx) <= chase_stop_distance:
+					velocity.x = 0.0
+				else:
+					var dir := signf(dx)
+					_set_direction(dir)
+					velocity.x = (dir * speed) if _has_floor_ahead(dir) else 0.0
+
+	move_and_slide()
+
+func _has_floor_ahead(dir: float) -> bool:
+	floor_check.position.x = absf(floor_check.position.x) * dir
+	floor_check.force_shapecast_update()
+	return floor_check.is_colliding()
+
+func _set_direction(dir: float) -> void:
+	if is_zero_approx(dir): return
+	move_direction = dir
+	sprite.flip_h = dir < 0.0
+
+func take_damage(amount: int) -> void:
+	if is_dead or amount <= 0: return
+	current_health = maxi(current_health - amount, 0)
+	if current_health <= 0:
+		die()
+
+func die() -> void:
+	if is_dead: return
+	is_dead = true
+	for loot_scene in loot:
+		if loot_scene:
+			var item = loot_scene.instantiate()
+			get_parent().add_child(item)
+			if item is Node2D:
+				item.global_position = global_position
+	queue_free()
+
+func _on_damage_body_entered(body: Node2D) -> void:
+	if body.is_in_group("player"):
+		player_in_damage_area = body
+		_try_damage_player()
+
+func _try_damage_player() -> void:
+	if not is_instance_valid(player_in_damage_area): return
+	if Game.take_damage(damage):
+		var dir := signf(player_in_damage_area.global_position.x - global_position.x)
+		player_in_damage_area.knockback(Vector2(dir, -0.25).normalized())
+
+func knockback(direction: Vector2) -> void:
+	if is_dead: return
+	is_knocked_back = true
+	velocity = Vector2(direction.x * knockback_force, -knockback_upward_force)
+	get_tree().create_timer(knockback_time).timeout.connect(func(): is_knocked_back = false)
+	
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./entities/characters/npcs/lumi/lumi.gd
+extends CharacterBody2D
+class_name Lumi
+
+@onready var anim: AnimatedSprite2D = $AnimatedSprite2D
+
+
+func play_walk(flip_left: bool = true) -> void:
+	if anim:
+		anim.flip_h = flip_left
+		anim.play("walk")
+
+
+func play_idle(flip_left: bool = true) -> void:
+	if anim:
+		anim.flip_h = flip_left
+		anim.play("idle")
+
+
+func _physics_process(delta: float) -> void:
+	if not is_on_floor():
+		velocity.y += 600.0 * delta
+		move_and_slide()
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./entities/characters/npcs/base_npc/base_npc.gd
+extends DialogueInteractable
+class_name BaseNPC
+
+
+@export_category("NPC")
+@export var npc_id: StringName
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./entities/environment/sign/sign.gd
+extends DialogueInteractable
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./entities/environment/barrier/barrier.gd
+extends StaticBody2D
+
+@export var flag_name: String = ""
+
+
+func _ready() -> void:
+	GameState.world_state_changed.connect(_update_state)
+	_update_state()
+
+
+func _update_state(_obj = "", _key = "", _value = null) -> void:
+	var is_active: bool = GameState.get_world_state(flag_name, "active") == true
+	visible = is_active
+	$CollisionShape2D.set_deferred("disabled", not is_active)
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./entities/environment/spikes/spikes.gd
+extends Area2D
+
+var player_inside: Node2D = null
+
+func _ready() -> void:
+	body_entered.connect(func(b):
+		if b.name == "Player":
+			player_inside = b
+			_try_damage()
+	)
+	body_exited.connect(func(b):
+		if b == player_inside:
+			player_inside = null
+	)
+	Game.invulnerability_ended.connect(_try_damage)
+
+func _try_damage() -> void:
+	if is_instance_valid(player_inside) and Game.take_damage(1):
+		var dir := (player_inside.global_position - global_position).normalized()
+		player_inside.knockback(dir)
+		
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./entities/environment/portal/portal.gd
+extends Area2D
+
+@export_file("*.tscn") var target_level_path: String
+@export var control_lock_delay: float = 0.05
+var changing_level: bool = false
+
+func _ready() -> void:
+	body_entered.connect(_on_body_entered)
+
+func _on_body_entered(body: Node2D) -> void:
+	if changing_level or body.name != "Player" or target_level_path.is_empty():
+		return
+
+	changing_level = true
+	set_deferred("monitoring", false)
+	Game.load_level(target_level_path)
+
+	await get_tree().create_timer(control_lock_delay).timeout
+	if is_instance_valid(body) and body.has_method("set_controls_enabled"):
+		body.set_controls_enabled(false)
+		
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./core/systems/game_manager.gd
+extends Node
+
+signal health_changed(new_health: int)
+signal player_damaged
+signal invulnerability_ended
+
+var max_health: int = 3
+var current_health: int = 3
+var invulnerability_time: float = 1.0
+var is_invulnerable: bool = false
+var fade_layer: ColorRect
+
+func _ready() -> void:
+	var canvas := CanvasLayer.new()
+	canvas.layer = 100
+	add_child(canvas)
+
+	fade_layer = ColorRect.new()
+	fade_layer.color = Color(0, 0, 0, 0)
+	fade_layer.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	fade_layer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	canvas.add_child(fade_layer)
+
+func take_damage(amount: int) -> bool:
+	if is_invulnerable or current_health <= 0:
+		return false
+
+	is_invulnerable = true
+	current_health = clampi(current_health - amount, 0, max_health)
+	health_changed.emit(current_health)
+	player_damaged.emit()
+
+	if current_health <= 0:
+		restart_game.call_deferred()
+	else:
+		get_tree().create_timer(invulnerability_time).timeout.connect(func():
+			is_invulnerable = false
+			invulnerability_ended.emit()
+		)
+	return true
+
+func restart_game() -> void:
+	current_health = max_health
+	is_invulnerable = false
+	get_tree().reload_current_scene()
+
+func _fade(target_alpha: float, duration: float = 0.3) -> Signal:
+	var tween := create_tween()
+	tween.tween_property(fade_layer, "color:a", target_alpha, duration)
+	return tween.finished
+
+func load_level(path: String) -> void:
+	await _fade(1.0)
+	if get_tree().change_scene_to_file(path) != OK:
+		push_error("Не удалось загрузить уровень: " + path)
+		_fade(0.0)
+		return
+	await get_tree().process_frame
+	await _fade(0.0)
+
+func stop_all_music() -> void:
+	for node in get_tree().get_nodes_in_group("music"):
+		if node is AudioStreamPlayer:
+			var tween := create_tween()
+			tween.tween_property(node, "volume_db", -80.0, 0.5)
+			tween.finished.connect(node.stop)
+			
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./core/systems/dialogue_interactable.gd
+extends StaticBody2D
+class_name DialogueInteractable
+
+
+@export_category("Dialogue")
+@export var dialogue_resource: DialogueResource
+@export var dialogue_title: String = "start"
+
+
+var _dialogue_active := false
+
+
+func interact(interactor: Node):
+	if _dialogue_active:
+		return
+
+	if dialogue_resource == null:
+		push_warning("%s: dialogue_resource не назначен" % name)
+		return
+
+	_dialogue_active = true
+
+	if interactor.has_method("set_controls_enabled"):
+		interactor.set_controls_enabled(false)
+
+	DialogueManager.show_dialogue_balloon(
+		dialogue_resource,
+		dialogue_title
+	)
+
+	await DialogueManager.dialogue_ended
+
+	if is_instance_valid(interactor) and interactor.has_method("set_controls_enabled"):
+		interactor.set_controls_enabled(true)
+
+	_dialogue_active = false
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./core/systems/inventory.gd
+extends Node
+
+signal changed
+
+var currencies: Dictionary = {}
+var weapons: Dictionary = {}
+var equipped_weapon_id: StringName = &""
+
+func add_currency(currency_id: String, amount: int) -> void:
+	if amount <= 0: return
+	currencies[currency_id] = get_currency(currency_id) + amount
+	changed.emit()
+
+func get_currency(currency_id: String) -> int:
+	return currencies.get(currency_id, 0)
+
+func spend_currency(currency_id: String, amount: int) -> bool:
+	if amount <= 0 or get_currency(currency_id) < amount:
+		return false
+	currencies[currency_id] -= amount
+	changed.emit()
+	return true
+
+func add_weapon(weapon: WeaponData) -> bool:
+	if not weapon or weapon.weapon_id.is_empty() or weapons.has(weapon.weapon_id):
+		return false
+	weapons[weapon.weapon_id] = weapon
+	if equipped_weapon_id.is_empty():
+		equipped_weapon_id = weapon.weapon_id
+	changed.emit()
+	return true
+
+func equip_weapon(weapon_id: StringName) -> bool:
+	if not weapons.has(weapon_id):
+		return false
+	equipped_weapon_id = weapon_id
+	changed.emit()
+	return true
+
+func get_equipped_weapon() -> WeaponData:
+	return weapons.get(equipped_weapon_id)
+
+func has_weapon(weapon_id: StringName) -> bool:
+	return weapons.has(weapon_id)
+
+func get_weapon(weapon_id: StringName) -> WeaponData:
+	return weapons.get(weapon_id)
+
+func clear() -> void:
+	currencies.clear()
+	weapons.clear()
+	equipped_weapon_id = &""
+	changed.emit()
+
+func print_inventory() -> void:
+	print("=== INVENTORY ===", "\nCurrencies: ", currencies, "\nWeapons: ", weapons.keys())
+	
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./core/systems/game_state.gd
+extends Node
+
+signal world_state_changed(object_id: String, key: String, value: Variant)
+
+var current_level_path: String = ""
+var current_checkpoint_id: String = ""
+var story_point: String = ""
+var current_mode: StringName = &"free"
+
+var character_states: Dictionary = {}
+var dialogue_states: Dictionary = {}
+var world_states: Dictionary = {}
+
+func set_mode(mode: StringName) -> void:
+	current_mode = mode
+
+func set_location(level_path: String, checkpoint_id: String = "") -> void:
+	current_level_path = level_path
+	current_checkpoint_id = checkpoint_id
+
+func set_story_point(point_id: String) -> void:
+	story_point = point_id
+
+func set_character_state(character_id: String, key: String, value: Variant) -> void:
+	character_states.get_or_add(character_id, {})[key] = value
+
+func get_character_state(character_id: String, key: String) -> Variant:
+	return character_states.get(character_id, {}).get(key)
+
+func set_dialogue_state(dialogue_id: String, key: String, value: Variant) -> void:
+	dialogue_states.get_or_add(dialogue_id, {})[key] = value
+
+func get_dialogue_state(dialogue_id: String, key: String) -> Variant:
+	return dialogue_states.get(dialogue_id, {}).get(key)
+
+func set_world_state(object_id: String, key: String, value: Variant) -> void:
+	world_states.get_or_add(object_id, {})[key] = value
+	world_state_changed.emit(object_id, key, value)
+
+func get_world_state(object_id: String, key: String) -> Variant:
+	return world_states.get(object_id, {}).get(key)
+
+func clear_all() -> void:
+	current_level_path = ""
+	current_checkpoint_id = ""
+	story_point = ""
+	character_states.clear()
+	dialogue_states.clear()
+	world_states.clear()
+	current_mode = &"free"
+	
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./core/systems/rhythm_engine/rhythm_engine.gd
+extends CanvasLayer
+
+signal beat(index)
+
+@export_group("Settings")
+@export var bpm: int = 120
+@export var music_track: AudioStream
+@export var flash_color: Color = Color(1, 1, 1, 0.2)
+
+@onready var audio_player = $AudioStreamPlayer
+@onready var flash_rect = $FlashOverlay
+
+var time_begin: float = 0
+var beat_duration: float = 0
+var last_beat: int = 0
+
+func _ready():
+	beat_duration = 60.0 / bpm
+	if music_track:
+		audio_player.stream = music_track
+	
+	# Сами подписываемся на свой же сигнал для визуала
+	beat.connect(_on_own_beat)
+
+func play_music():
+	time_begin = Time.get_ticks_usec()
+	audio_player.play()
+
+func _process(_delta):
+	if audio_player.playing:
+		var time = (Time.get_ticks_usec() - time_begin) / 1000000.0
+		var current_beat = int(floor(time / beat_duration))
+		
+		if current_beat > last_beat:
+			last_beat = current_beat
+			beat.emit(last_beat)
+
+# Логика, которая раньше была в RhythmUI.gd
+func _on_own_beat(_index):
+	flash_rect.color = Color.WHITE
+	var tween = create_tween()
+	tween.tween_property(flash_rect, "color", flash_color, 0.2)
+
+<!<ENDOFFILE!<<

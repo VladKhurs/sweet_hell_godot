@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://dgqqjsqlm0ivv"]
+
+[ext_resource type="Script" uid="uid://bpwvaorx3tt3t" path="res://entities/pickups/currency/currency_pickup.gd" id="1_x1pg3"]
+[ext_resource type="Texture2D" uid="uid://cifa4cdl01cjh" path="res://icon.svg" id="2_x0jwg"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0lyf5"]
+size = Vector2(20, 10)
+
+[node name="SugarCube" type="Area2D" unique_id=1411211640]
+position = Vector2(63, 89)
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_x1pg3")
+currency_id = "sugar"
+amount = 3
+pickup_id = "lvl_1_sugar_01"
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=2127763181]
+position = Vector2(-3.5762787e-07, -1.4305115e-06)
+scale = Vector2(0.46, 0.14999999)
+texture = ExtResource("2_x0jwg")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=128524751]
+shape = SubResource("RectangleShape2D_0lyf5")

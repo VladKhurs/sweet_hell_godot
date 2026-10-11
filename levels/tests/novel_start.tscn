@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://byt4l34jmxlsm"]
+
+[ext_resource type="PackedScene" uid="uid://bg0dmbfog57yh" path="res://levels/templates/novel_level/level_novel_template.tscn" id="1_fmbnl"]
+[ext_resource type="Resource" uid="uid://h8yln63cf0p0" path="res://assets/dialogues/novels/novel_start.dialogue" id="2_tebff"]
+
+[node name="LevelNovelTemplate" unique_id=1520880229 instance=ExtResource("1_fmbnl")]
+novel_id = "start_novel"
+dialogue_resource = ExtResource("2_tebff")
+next_level_path = "uid://dkq65bxwaf6sb"
+
+[node name="BackgroundCurrent" parent="." index="0" unique_id=1722647537]
+stretch_mode = 5
+
+[node name="BackgroundNext" parent="." index="1" unique_id=1875863597]
+stretch_mode = 5

@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://be1u5xewoavi2"]
+
+[ext_resource type="Script" uid="uid://ps71r0svd1ue" path="res://entities/environment/sign/sign.gd" id="1_ccq6w"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3i727"]
+size = Vector2(7, 12)
+
+[node name="Sign" type="StaticBody2D" unique_id=927737693]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_ccq6w")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1606767845]
+offset_left = -4.0
+offset_top = -4.0
+offset_right = 3.0
+offset_bottom = 5.0
+
+[node name="ColorRect2" type="ColorRect" parent="." unique_id=1330927808]
+offset_left = -1.0
+offset_top = 2.0
+offset_bottom = 8.0
+
+[node name="ColorRect3" type="ColorRect" parent="." unique_id=1334693344]
+offset_left = -3.0
+offset_top = 7.0
+offset_right = 2.0
+offset_bottom = 8.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=997471341]
+position = Vector2(-0.5, 2)
+shape = SubResource("RectangleShape2D_3i727")

@@ -1,0 +1,46 @@
+[gd_scene format=4 uid="uid://dkq65bxwaf6sb"]
+
+[ext_resource type="Script" uid="uid://dt6xvkli5x4xo" path="res://levels/cutscenes/walk_cutscene.gd" id="1_2pen3"]
+[ext_resource type="PackedScene" uid="uid://b6da8kw4r514b" path="res://levels/templates/level_platformer_template.tscn" id="1_b240e"]
+[ext_resource type="PackedScene" uid="uid://cimcaftuyccag" path="res://entities/characters/npcs/lumi/lumi.tscn" id="2_rl2uw"]
+[ext_resource type="PackedScene" uid="uid://1el24fwt6aww" path="res://entities/environment/portal/portal.tscn" id="4_i8sku"]
+[ext_resource type="PackedScene" uid="uid://be1u5xewoavi2" path="res://entities/environment/sign/sign.tscn" id="5_7fxpp"]
+[ext_resource type="Resource" uid="uid://dbxwmojuok14m" path="res://assets/dialogues/environment/signs/hidden_sign.dialogue" id="6_4f67r"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rl2uw"]
+size = Vector2(20, 154)
+
+[node name="LevelPlatformerTemplate" unique_id=2086354120 instance=ExtResource("1_b240e")]
+
+[node name="SpawnPoint" parent="." index="0" unique_id=183350171]
+position = Vector2(181, 132)
+
+[node name="TileMapLayer" parent="." index="1" unique_id=1920565257]
+tile_map_data = PackedByteArray("AAAAAAoAAAABAAAAAAABAAoAAAABAAAAAAACAAoAAAABAAAAAAADAAoAAAABAAAAAAAEAAoAAAABAAAAAAAFAAoAAAABAAAAAAAGAAoAAAABAAAAAAAHAAoAAAABAAAAAAAIAAoAAAABAAAAAAAJAAoAAAABAAAAAAAKAAoAAAABAAAAAAALAAoAAAABAAAAAAAMAAoAAAABAAAAAAANAAoAAAABAAAAAAAOAAoAAAABAAAAAAAPAAoAAAABAAAAAAAQAAoAAAABAAAAAAARAAoAAAABAAAAAAASAAoAAAABAAAAAAATAAoAAAABAAAAAAAIAAgA//////////8JAAkA//////////8TAAcAAAABAAAAAAATAAgAAAABAAAAAAATAAkAAAABAAAAAAALAAUAAAABAAAAAAAMAAUAAAABAAAAAAANAAUAAAABAAAAAAAOAAUAAAABAAAAAAATAAYAAAABAAAAAAATAAUAAAABAAAAAAATAAQAAAABAAAAAAATAAMAAAABAAAAAAATAAIAAAABAAAAAAATAAEAAAABAAAAAAATAAAAAAABAAAAAAASAAAAAAABAAAAAAARAAAAAAABAAAAAAAQAAAAAAABAAAAAAAPAAAAAAABAAAAAAAOAAAAAAABAAAAAAANAAAAAAABAAAAAAAMAAAAAAABAAAAAAALAAAAAAABAAAAAAAKAAAAAAABAAAAAAAJAAAAAAABAAAAAAAIAAAAAAABAAAAAAAHAAAAAAABAAAAAAAGAAAAAAABAAAAAAAFAAAAAAABAAAAAAAEAAAAAAABAAAAAAADAAAAAAABAAAAAAACAAAAAAABAAAAAAABAAAAAAABAAAAAAAAAAAAAAABAAAAAAD//wAAAAABAAAAAAAAAAkAAAABAAAAAAAAAAgAAAABAAAAAAAAAAcAAAABAAAAAAAAAAYAAAABAAAAAAAAAAUAAAABAAAAAAAAAAQAAAABAAAAAAAAAAMAAAABAAAAAAAAAAIAAAABAAAAAAAAAAEAAAABAAAAAAADAAMAAAABAAAAAAADAAQAAAABAAAAAAAEAAUAAAABAAAAAAAIAAIAAAABAAAAAAAQAAIAAAABAAAAAAASAAcA//////////8OAAcA//////////8EAAkA//////////8BAAcA//////////8HAAQAAAABAAAAAAAIAAQAAAABAAAAAAAQAAkA//////////8PAAcA//////////8=")
+
+[node name="Wall" type="StaticBody2D" parent="." index="3" unique_id=1941425600]
+position = Vector2(123, 154)
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Wall" index="0" unique_id=1203270547]
+position = Vector2(0, -67)
+shape = SubResource("RectangleShape2D_rl2uw")
+
+[node name="Lumi" parent="." index="4" unique_id=714174558 instance=ExtResource("2_rl2uw")]
+position = Vector2(150, 152)
+
+[node name="WalkCutscene" type="Node" parent="." index="5" unique_id=1207138077]
+script = ExtResource("1_2pen3")
+
+[node name="Portal" parent="." index="6" unique_id=1296805079 instance=ExtResource("4_i8sku")]
+position = Vector2(67, 144)
+target_level_path = "uid://w60ql0jehtgg"
+
+[node name="Portal2" parent="." index="7" unique_id=110624645 instance=ExtResource("4_i8sku")]
+position = Vector2(295, 144)
+target_level_path = "uid://cn3yklegd3k6w"
+
+[node name="Sign" parent="." index="8" unique_id=927737693 instance=ExtResource("5_7fxpp")]
+visible = false
+position = Vector2(137, 167)
+dialogue_resource = ExtResource("6_4f67r")

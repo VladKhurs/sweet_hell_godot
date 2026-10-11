@@ -1,0 +1,16 @@
+[remap]
+
+importer="dialogue_manager"
+importer_version=15
+type="Resource"
+uid="uid://cgysfmmdubviu"
+path="res://.godot/imported/conditions_example.dialogue-ed1abe8a6a6e5db646e2dc7d7be4ede4.tres"
+
+[deps]
+
+source_file="res://assets/dialogues/npcs/conditions_example.dialogue"
+dest_files=["res://.godot/imported/conditions_example.dialogue-ed1abe8a6a6e5db646e2dc7d7be4ede4.tres"]
+
+[params]
+
+defaults=true

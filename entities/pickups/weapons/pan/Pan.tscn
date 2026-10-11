@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://cq1f0f7t0fu8y"]
+
+[ext_resource type="Script" uid="uid://dgaa36kkwbj6h" path="res://entities/pickups/weapons/weapon_pickup.gd" id="1_lkkfv"]
+[ext_resource type="Resource" uid="uid://crhjhglmrw4vl" path="res://entities/pickups/weapons/pan/pan.tres" id="2_j6gld"]
+[ext_resource type="Texture2D" uid="uid://cifa4cdl01cjh" path="res://icon.svg" id="3_hrcum"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_0lyf5"]
+
+[node name="Pan" type="Area2D" unique_id=1207583157]
+position = Vector2(78, 34)
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_lkkfv")
+weapon_data = ExtResource("2_j6gld")
+pickup_id = "01_pan_lvl_1"
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=2059912051]
+texture = ExtResource("3_hrcum")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1536893292]
+shape = SubResource("CircleShape2D_0lyf5")

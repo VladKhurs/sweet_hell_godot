@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://depy7u5q0glhc"]
+
+[ext_resource type="PackedScene" uid="uid://gp5sqeney20h" path="res://levels/templates/base_level/base_level.tscn" id="1_pfixs"]
+
+[node name="LevelGridTemplate" unique_id=2086354120 instance=ExtResource("1_pfixs")]
+level_mode = "grid"

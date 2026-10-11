@@ -1,0 +1,16 @@
+[remap]
+
+importer="dialogue_manager"
+importer_version=15
+type="Resource"
+uid="uid://cddxgm2rvx1j6"
+path="res://.godot/imported/behind_pub.dialogue-2b84c4ec4206a0f9d5bc763a2d79dc57.tres"
+
+[deps]
+
+source_file="res://assets/dialogues/environment/signs/behind_pub.dialogue"
+dest_files=["res://.godot/imported/behind_pub.dialogue-2b84c4ec4206a0f9d5bc763a2d79dc57.tres"]
+
+[params]
+
+defaults=true

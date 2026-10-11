@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://ceyd21xouc5ml"]
+
+[ext_resource type="Script" uid="uid://divtryx6cxhje" path="res://entities/environment/barrier/barrier.gd" id="1_jnp7u"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0lyf5"]
+
+[node name="Barrier" type="StaticBody2D" unique_id=609305499]
+position = Vector2(309, 167)
+script = ExtResource("1_jnp7u")
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1381650255]
+shape = SubResource("RectangleShape2D_0lyf5")

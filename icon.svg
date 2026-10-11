@@ -1,0 +1,27 @@
+<svg width="50" height="70" viewBox="0 0 60 65" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Градиент для палочки -->
+    <linearGradient id="stickGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#4d4d4d"/>
+      <stop offset="100%" style="stop-color:#66225b"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Все элементы обёрнуты в группу с поворотом на 15° по часовой стрелке -->
+  <g transform="rotate(15, 20, 37) scale(1.25, 0.965)">
+    <!-- 4 сектора леденца (conic gradient) -->
+    <!-- Сектор 1: #ff6cb6 (0-90deg) -->
+    <path d="M 20,20 L 20,0 A 20,20 0 0,1 40,20 Z" fill="#ff6cb6"/>
+    <!-- Сектор 2: #ffa7d1 (90-180deg) -->
+    <path d="M 20,20 L 40,20 A 20,20 0 0,1 20,40 Z" fill="#ffa7d1"/>
+    <!-- Сектор 3: #b788e5 (180-270deg) -->
+    <path d="M 20,20 L 20,40 A 20,20 0 0,1 0,20 Z" fill="#b788e5"/>
+    <!-- Сектор 4: #cb2c36 (270-360deg) -->
+    <path d="M 20,20 L 0,20 A 20,20 0 0,1 20,0 Z" fill="#cb2c36"/>
+
+    <!-- Тень палочки -->
+    <rect x="20" y="42.5" width="4" height="29.5" fill="#b788e5"/>
+    <!-- Палочка -->
+    <rect x="18" y="40" width="4" height="30" fill="url(#stickGradient)"/>
+  </g>
+</svg>

@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://bg0dmbfog57yh"]
+
+[ext_resource type="Script" uid="uid://cu2ljqwlqun1b" path="res://levels/templates/novel_level/novel_level.gd" id="1_aaluj"]
+
+[node name="LevelNovelTemplate" type="Control" unique_id=1520880229]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_aaluj")
+
+[node name="BackgroundCurrent" type="TextureRect" parent="." unique_id=1722647537]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="BackgroundNext" type="TextureRect" parent="." unique_id=1875863597]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
