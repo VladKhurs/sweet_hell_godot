@@ -1,8 +1,0 @@
-[gd_scene format=3 uid="uid://c07ydcdda3ogc"]
-
-[ext_resource type="PackedScene" uid="uid://cyvvbybop5253" path="res://levels/templates/level_beat_template.tscn" id="1_tlp1r"]
-
-[node name="BaseLevel" unique_id=2086354120 instance=ExtResource("1_tlp1r")]
-
-[node name="HUD" parent="." index="2" unique_id=588394198]
-visible = false

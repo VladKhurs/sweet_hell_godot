@@ -1,0 +1,16 @@
+[remap]
+
+importer="dialogue_manager"
+importer_version=15
+type="Resource"
+uid="uid://oftmyk3ofc58"
+path="res://.godot/imported/lumi_together.dialogue-0c34baf75f8ea1651f56983157e4cf47.tres"
+
+[deps]
+
+source_file="res://assets/dialogues/npcs/lumi_together.dialogue"
+dest_files=["res://.godot/imported/lumi_together.dialogue-0c34baf75f8ea1651f56983157e4cf47.tres"]
+
+[params]
+
+defaults=true

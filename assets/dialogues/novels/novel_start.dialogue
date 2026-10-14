@@ -33,12 +33,12 @@
 	Люми: Меня зовут Люми, будем знакомы.
 	ГГ: Ммм... 
 	ГГ: Короткий путь к тёмному углу, как романтично.
-	do GameState.set_story_point("walk-together")
+	do Game.load_level("res://levels/intro/walk_together/walk_together.tscn")
 	=> END
 - Только через мой труп!
 	Люми: Это такая благодарность спасительнице? :(
 	Люми: Увидимся в баре, к нему ведут все дороги.
 	Люми: Передавай привет чертям, пацан.
 	ГГ: Ну ты и чертовка!
-	do GameState.set_story_point("walk-alone")
+	do Game.load_level("res://levels/intro/walk_alone/walk_alone.tscn")
 	=> END

@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://w60ql0jehtgg"]
+
+[ext_resource type="PackedScene" uid="uid://bg0dmbfog57yh" path="res://levels/templates/novel_level/level_novel_template.tscn" id="1_uc7ld"]
+[ext_resource type="Resource" uid="uid://dy3kwsuvgvoay" path="res://assets/dialogues/novels/first_in_pub.dialogue" id="2_b63s4"]
+
+[node name="LevelNovelTemplate" unique_id=1520880229 instance=ExtResource("1_uc7ld")]
+dialogue_resource = ExtResource("2_b63s4")
+dialogue_title = ""
+next_level_path = "uid://bg8bo7wbtd46x"

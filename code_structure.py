@@ -1,7 +1,7 @@
 import os
 
 def create_combined_file():
-    ignored_extensions = ['.png', '.svg', '.webp', '.jpg', '.txt', '.ico', '.docx', '.pdf', '.sql', '.log', '.tscn', '.mp3', '.import', '.godot', '.cfg', '.uid', '.editorconfig', '.gitattributes', '.py', '.keystore', '.dialogue']
+    ignored_extensions = ['.png', '.svg', '.webp', '.jpg', '.txt', '.ico', '.docx', '.pdf', '.sql', '.log', '.tscn', '.mp3', '.import', '.godot', '.cfg', '.uid', '.editorconfig', '.gitattributes', '.py', '.keystore']
     ignored_directories = ['addons', '.git', 'node_modules', '.qodo', 'frontend', 'logs', '.godot', '.']
     ignored_files = ['package-lock.json', '.gitignore', '.browserslistrc', 'code.txt', 'create_result.py', 'copy_names.py', 'dialogue_manager.gd']
     output_filename = 'code.txt'

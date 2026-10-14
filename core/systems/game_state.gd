@@ -4,7 +4,6 @@ signal world_state_changed(object_id: String, key: String, value: Variant)
 
 var current_level_path: String = ""
 var current_checkpoint_id: String = ""
-var story_point: String = ""
 var current_mode: StringName = &"free"
 
 var character_states: Dictionary = {}
@@ -17,9 +16,6 @@ func set_mode(mode: StringName) -> void:
 func set_location(level_path: String, checkpoint_id: String = "") -> void:
 	current_level_path = level_path
 	current_checkpoint_id = checkpoint_id
-
-func set_story_point(point_id: String) -> void:
-	story_point = point_id
 
 func set_character_state(character_id: String, key: String, value: Variant) -> void:
 	character_states.get_or_add(character_id, {})[key] = value
@@ -43,7 +39,6 @@ func get_world_state(object_id: String, key: String) -> Variant:
 func clear_all() -> void:
 	current_level_path = ""
 	current_checkpoint_id = ""
-	story_point = ""
 	character_states.clear()
 	dialogue_states.clear()
 	world_states.clear()

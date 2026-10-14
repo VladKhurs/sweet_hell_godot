@@ -1,9 +1,0 @@
-[gd_scene format=3 uid="uid://cyvvbybop5253"]
-
-[ext_resource type="PackedScene" uid="uid://gp5sqeney20h" path="res://levels/templates/base_level/base_level.tscn" id="1_radj3"]
-[ext_resource type="PackedScene" uid="uid://c1mw7bq0e3jci" path="res://core/systems/rhythm_engine/rhythm_engine.tscn" id="2_f645p"]
-
-[node name="BaseLevel" unique_id=2086354120 instance=ExtResource("1_radj3")]
-level_mode = "beat"
-
-[node name="RhythmEngine" parent="." index="3" unique_id=1644448664 instance=ExtResource("2_f645p")]
