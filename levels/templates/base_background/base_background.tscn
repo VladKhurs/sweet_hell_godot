@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://v04exd6m2x10"]
+
+[ext_resource type="Script" uid="uid://bc4on7lpysdqd" path="res://levels/templates/base_background/base_background.gd" id="1_0r2yd"]
+[ext_resource type="Texture2D" uid="uid://o1j7cw2fh7co" path="res://assets/images/locations/0_country/backgroundt.png" id="2_po5qj"]
+
+[node name="BaseBackground" type="Node2D" unique_id=1537437011]
+script = ExtResource("1_0r2yd")
+bg_far = ExtResource("2_po5qj")
+
+[node name="FarLayer" type="Parallax2D" parent="." unique_id=279554651]
+scroll_scale = Vector2(0.7, 0.7)
+
+[node name="Sprite2D" type="Sprite2D" parent="FarLayer" unique_id=902274915]
+centered = false

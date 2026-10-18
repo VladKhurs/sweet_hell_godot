@@ -99,68 +99,16 @@ $> GameState.set_character_state("old_man", "met", true)
 Люми: Я же говорила, что все дороги ведут сюда!
 => END
 <!<ENDOFFILE!<<
+>>!>FILEPATH: ./assets/dialogues/npcs/lumi_together.dialogue
+~ start
+Люми: Классно прогулялись, надо будет повторить
+=> END
+<!<ENDOFFILE!<<
 >>!>FILEPATH: ./assets/dialogues/npcs/old_man/old_man.dialogue
 ~ start
 
 Добро пожаловать
 
-=> END
-<!<ENDOFFILE!<<
->>!>FILEPATH: ./assets/dialogues/environment/signs/pub_1.dialogue
-~ start
-Портал ведёт в начальную катсцену
-=> END
-<!<ENDOFFILE!<<
->>!>FILEPATH: ./assets/dialogues/environment/signs/behind_pub.dialogue
-~ start
-Это вход в бар
-А сверху на фоне замок
-Но похоже на ядерку
-И при чем тут провальный эксперимент
-=> END
-<!<ENDOFFILE!<<
->>!>FILEPATH: ./assets/dialogues/environment/signs/lvl_1_sign.dialogue
-~ village
-
-Привет, Никитосик!
-Маленькие леденцы - это валюта, она реально считается и записывается и кошелёк ГГ
-Огромный лединец - это оружие, в начинке у него кулдаун и урон
-=> END
-
-
-~ forest
-
-ОПАСНО!
-
-Дальше начинается тёмный лес.
-
-=> END
-
-
-~ bakery
-
-Пекарня →
-Работаем с 8 утра.
-
-=> END
-<!<ENDOFFILE!<<
->>!>FILEPATH: ./assets/dialogues/environment/signs/hidden_sign.dialogue
-~ start
-A как она прошла здесь? 
-*ули я не могу... 
-*Надо было соглашаться*
-=> END
-<!<ENDOFFILE!<<
->>!>FILEPATH: ./assets/dialogues/environment/signs/pub_2.dialogue
-~ start
-Портал ведёт в тестовый уровень с оружием и врагом
-=> END
-<!<ENDOFFILE!<<
->>!>FILEPATH: ./assets/dialogues/novels/first_in_pub.dialogue
-~ start
-*Вы доходите с Люми до бара*
-*Люми врывается с ноги в бар и кричит:*
-Люми: Бармен, смотри кого я нашла!
 => END
 <!<ENDOFFILE!<<
 >>!>FILEPATH: ./assets/dialogues/novels/novel_start.dialogue
@@ -199,15 +147,29 @@ A как она прошла здесь?
 	Люми: Меня зовут Люми, будем знакомы.
 	ГГ: Ммм... 
 	ГГ: Короткий путь к тёмному углу, как романтично.
-	do GameState.set_story_point("walk-together")
+	do Game.load_level("res://levels/intro/walk_together/walk_together.tscn")
 	=> END
 - Только через мой труп!
 	Люми: Это такая благодарность спасительнице? :(
 	Люми: Увидимся в баре, к нему ведут все дороги.
 	Люми: Передавай привет чертям, пацан.
 	ГГ: Ну ты и чертовка!
-	do GameState.set_story_point("walk-alone")
+	do Game.load_level("res://levels/intro/walk_alone/walk_alone.tscn")
 	=> END
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./assets/dialogues/novels/first_in_pub.dialogue
+~ start
+*Вы доходите с Люми до бара*
+*Люми врывается с ноги в бар и кричит:*
+Люми: Бармен, смотри кого я нашла!
+=> END
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./assets/dialogues/signs/hidden_sign.dialogue
+~ start
+A как она прошла здесь? 
+*ули я не могу... 
+*Надо было соглашаться*
+=> END
 <!<ENDOFFILE!<<
 >>!>FILEPATH: ./script_templates/.gdignore
 
@@ -217,9 +179,41 @@ A как она прошла здесь?
 # meta-default: true
 extends _BASE_
 
-
+роолллоррррррооолдролоррррроооллллллоооррррррооллллоорррррррпппаавооллллллропарппааааыыыыывввввннннкккксссрррооооееееммммввввегнешкгнгшнеорпопопорпаауупп
 func tick(actor: Node, blackboard: Blackboard) -> int:
 	return SUCCESS
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./levels/templates/base_cutscene.gd
+extends Node2D
+class_name BaseCutscene
+
+@export_file("*.tscn") var next_level_path: String = ""
+const PLAYER_SCENE = preload("res://entities/characters/player/player.tscn")
+
+var player: CharacterBody2D
+
+func _ready() -> void:
+	player = get_tree().root.find_child("Player", true, false)
+	if not player:
+		player = PLAYER_SCENE.instantiate()
+		add_child(player)
+
+	var spawn = get_node_or_null("SpawnPoint")
+	if spawn:
+		player.global_position = spawn.global_position
+
+	player.set_controls_enabled(false)
+	_run()
+
+func _run() -> void:
+	pass
+
+func finish() -> void:
+	if not next_level_path.is_empty():
+		Game.load_level(next_level_path)
+	elif player:
+		player.set_controls_enabled(true)
 
 <!<ENDOFFILE!<<
 >>!>FILEPATH: ./levels/templates/base_level/base_level.gd
@@ -358,97 +352,98 @@ func _go_to_next_level() -> void:
 	
 
 <!<ENDOFFILE!<<
->>!>FILEPATH: ./levels/cutscenes/base_cutscene.gd
-extends Node2D
-class_name BaseCutscene
+>>!>FILEPATH: ./levels/intro/walk_together/walk_together.gd
+extends Node
 
 @export_file("*.tscn") var next_level_path: String = ""
+@export var walk_distance: float = 120.0
+@export var walk_time: float = 3.5
 
+@onready var lumi: Node2D = get_parent().get_node_or_null("Lumi")
+var player: CharacterBody2D
 
 func _ready() -> void:
+	await get_tree().process_frame
+
+	player = get_tree().root.find_child("Player", true, false)
+	if not player:
+		return
+
+	# Ждем, пока игрок упадет на пол
+	while not player.is_on_floor():
+		await get_tree().physics_frame
+
+	player.set_controls_enabled(false)
 	_run()
 
-
 func _run() -> void:
-	pass
+	# Анимации ходьбы
+	player.anim.flip_h = true
+	player.anim.play("walk")
+	if lumi and lumi.has_method("play_walk"):
+		lumi.play_walk(true)
 
+	# Идут параллельно с одинаковой скоростью
+	var tween := create_tween().set_parallel(true)
+	tween.tween_property(player, "global_position:x", player.global_position.x - walk_distance, walk_time)
+	if lumi:
+		tween.tween_property(lumi, "global_position:x", lumi.global_position.x - walk_distance, walk_time)
+	await tween.finished
+
+	# Остановка
+	player.anim.play("idle")
+	if lumi and lumi.has_method("play_idle"):
+		lumi.play_idle(true)
+
+	finish()
 
 func finish() -> void:
 	if not next_level_path.is_empty():
 		Game.load_level(next_level_path)
-	else:
-		# Остаемся на этом же уровне — просто отдаем игроку управление:
-		var player = get_tree().root.find_child("Player", true, false)
-		if player and player.has_method("set_controls_enabled"):
-			player.set_controls_enabled(true)
+	elif player:
+		player.set_controls_enabled(true)
 
 <!<ENDOFFILE!<<
->>!>FILEPATH: ./levels/cutscenes/walk_cutscene.gd
+>>!>FILEPATH: ./levels/intro/walk_alone/walk_alone.gd
 extends Node
-class_name WalkCutscene
 
+@export_file("*.tscn") var next_level_path: String = ""
 @export var walk_distance: float = 120.0
 @export var walk_time: float = 2.5
-@export var lumi: Node2D
-@export var wall: Node2D
+
+@onready var lumi: Node2D = get_parent().get_node_or_null("Lumi")
+var player: CharacterBody2D
 
 func _ready() -> void:
 	await get_tree().process_frame
-	var choice := GameState.story_point
-	if choice.is_empty():
-		return
 
-	GameState.set_story_point("")
-	_run_cutscene(choice)
-
-func _run_cutscene(choice: String) -> void:
-	var player = get_tree().get_first_node_in_group("player")
-	if not player:
-		player = get_tree().root.find_child("Player", true, false)
+	player = get_tree().root.find_child("Player", true, false)
 	if not player:
 		return
 
-	if not lumi: lumi = get_tree().root.find_child("Lumi", true, false)
-	if not wall: wall = get_tree().root.find_child("Wall", true, false)
+	# Ждем, пока гравитация опустит игрока на пол
+	while not player.is_on_floor():
+		await get_tree().physics_frame
 
+	# Теперь глушим управление и запускаем катсцену
 	player.set_controls_enabled(false)
-	player.set_process(false)
+	_run()
 
-	if wall:
-		_set_wall_active(false)
+func _run() -> void:
+	if lumi:
+		if lumi.has_method("play_walk"): lumi.play_walk(true)
+		var tween_lumi := create_tween()
+		tween_lumi.tween_property(lumi, "global_position:x", lumi.global_position.x - walk_distance - 60.0, walk_time * 1)
+		await tween_lumi.finished
+		lumi.visible = false
 
-	if choice == "walk-together":
-		player.anim.flip_h = true
-		player.anim.play("walk")
-		if lumi and lumi.has_method("play_walk"): lumi.play_walk(true)
+	finish()
 
-		var tween := create_tween().set_parallel(true)
-		tween.tween_property(player, "global_position:x", player.global_position.x - walk_distance, walk_time)
-		if lumi:
-			tween.tween_property(lumi, "global_position:x", lumi.global_position.x - walk_distance, walk_time)
-		await tween.finished
-
-		player.anim.play("idle")
-		if lumi and lumi.has_method("play_idle"): lumi.play_idle(true)
-	else:
-		if lumi and lumi.has_method("play_walk"): lumi.play_walk(true)
-		if lumi:
-			var tween := create_tween()
-			tween.tween_property(lumi, "global_position:x", lumi.global_position.x - walk_distance - 50.0, walk_time)
-			await tween.finished
-			if lumi.has_method("play_idle"): lumi.play_idle(true)
-		if wall:
-			_set_wall_active(true)
-
-	player.set_process(true)
-	player.set_controls_enabled(true)
-
-func _set_wall_active(active: bool) -> void:
-	wall.visible = active
-	var col = wall.get_node_or_null("CollisionShape2D")
-	if col:
-		col.set_deferred("disabled", not active)
-		
+func finish() -> void:
+	if not next_level_path.is_empty():
+		Game.load_level(next_level_path)
+	elif player:
+		player.set_controls_enabled(true)
 
 <!<ENDOFFILE!<<
 >>!>FILEPATH: ./widgets/hud/hud.gd
@@ -1489,7 +1484,6 @@ signal world_state_changed(object_id: String, key: String, value: Variant)
 
 var current_level_path: String = ""
 var current_checkpoint_id: String = ""
-var story_point: String = ""
 var current_mode: StringName = &"free"
 
 var character_states: Dictionary = {}
@@ -1502,9 +1496,6 @@ func set_mode(mode: StringName) -> void:
 func set_location(level_path: String, checkpoint_id: String = "") -> void:
 	current_level_path = level_path
 	current_checkpoint_id = checkpoint_id
-
-func set_story_point(point_id: String) -> void:
-	story_point = point_id
 
 func set_character_state(character_id: String, key: String, value: Variant) -> void:
 	character_states.get_or_add(character_id, {})[key] = value
@@ -1528,7 +1519,6 @@ func get_world_state(object_id: String, key: String) -> Variant:
 func clear_all() -> void:
 	current_level_path = ""
 	current_checkpoint_id = ""
-	story_point = ""
 	character_states.clear()
 	dialogue_states.clear()
 	world_states.clear()

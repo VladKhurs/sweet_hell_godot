@@ -1,14 +1,19 @@
 [gd_scene format=3 uid="uid://gp5sqeney20h"]
 
 [ext_resource type="Script" uid="uid://c5mmkmarf2kqe" path="res://levels/templates/base_level/base_level.gd" id="1_b38sr"]
+[ext_resource type="Texture2D" uid="uid://o1j7cw2fh7co" path="res://assets/images/locations/0_country/backgroundt.png" id="2_7brta"]
 [ext_resource type="PackedScene" uid="uid://d327j6atrax0v" path="res://widgets/hud/hud.tscn" id="3_ennia"]
+[ext_resource type="PackedScene" uid="uid://v04exd6m2x10" path="res://levels/templates/base_background/base_background.tscn" id="3_j0gy4"]
 
 [node name="BaseLevel" type="Node2D" unique_id=2086354120]
 script = ExtResource("1_b38sr")
+bg_far = ExtResource("2_7brta")
 
 [node name="SpawnPoint" type="Marker2D" parent="." unique_id=183350171]
-position = Vector2(48, 64)
+position = Vector2(24, 40)
 
 [node name="HUD" parent="." unique_id=588394198 instance=ExtResource("3_ennia")]
 offset = Vector2(16, 16)
 transform = Transform2D(1, 0, 0, 1, 16, 16)
+
+[node name="BaseBackground" parent="." unique_id=1537437011 instance=ExtResource("3_j0gy4")]

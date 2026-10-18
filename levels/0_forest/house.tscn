@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://m8e8knkd76vm"]
+
+[ext_resource type="Texture2D" uid="uid://cd1xfhgr0j1qw" path="res://assets/images/locations/0_country/house.png" id="1_3o8m0"]
+
+[node name="House" type="Sprite2D" unique_id=917532466]
+texture_filter = 1
+position = Vector2(136, 32)
+texture = ExtResource("1_3o8m0")

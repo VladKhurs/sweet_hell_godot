@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://67111oqng3s0"]
+
+[ext_resource type="Texture2D" uid="uid://b3w5ergjlvy2m" path="res://assets/images/locations/0_country/labyrintр.png" id="1_f5yrg"]
+
+[node name="Labyrinth" type="Sprite2D" unique_id=710525556]
+texture = ExtResource("1_f5yrg")

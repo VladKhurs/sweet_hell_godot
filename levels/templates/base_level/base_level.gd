@@ -4,15 +4,12 @@ extends Node2D
 
 const PLAYER_SCENE = preload("res://entities/characters/player/player.tscn")
 
-
 func _ready():
 	GameState.set_location(scene_file_path)	
 	setup_level()
 
-
 func _enter_tree() -> void:
 	GameState.set_mode(level_mode)
-
 
 func setup_level():
 	var player = get_tree().root.find_child("Player", true, false)

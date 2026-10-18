@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://cxco2tmuoio6h"]
+
+[ext_resource type="Texture2D" uid="uid://ccw3i8lj1cfto" path="res://assets/images/characters/country_devil/country_devil.png" id="1_kddqc"]
+
+[node name="CountryDevil" type="Sprite2D" unique_id=1477498197]
+texture_filter = 1
+position = Vector2(48, 32)
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("1_kddqc")

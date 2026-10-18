@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bsnmrcd5to4v4"]
 
 [ext_resource type="PackedScene" uid="uid://xhrkjmbl76dc" path="res://entities/characters/npcs/base_npc/base_npc.tscn" id="1_8s00p"]
-[ext_resource type="Texture2D" uid="uid://71mex5r26l74" path="res://assets/images/tilemap/bar-static.png" id="3_g80gt"]
+[ext_resource type="Texture2D" uid="uid://71mex5r26l74" path="res://assets/images/characters/pub_man/pub_man.png" id="3_g80gt"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_afoo8"]
 size = Vector2(30.25, 28.25)
