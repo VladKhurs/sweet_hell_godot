@@ -5,6 +5,7 @@ signal world_state_changed(object_id: String, key: String, value: Variant)
 var current_level_path: String = ""
 var current_checkpoint_id: String = ""
 var current_mode: StringName = &"free"
+var is_penguin: bool = false
 
 var character_states: Dictionary = {}
 var dialogue_states: Dictionary = {}
@@ -43,4 +44,4 @@ func clear_all() -> void:
 	dialogue_states.clear()
 	world_states.clear()
 	current_mode = &"free"
-	
+	is_penguin = false

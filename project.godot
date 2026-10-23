@@ -17,9 +17,9 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-Game="*res://core/systems/game_manager.gd"
-GameState="*uid://dtanqguql8co8"
 DialogueManager="*uid://c3rodes2l3gxb"
+Game="*uid://bpvaim5o7jso2"
+GameState="*uid://dtanqguql8co8"
 Inventory="*uid://du38vmgn35blr"
 
 [display]
@@ -33,7 +33,7 @@ window/stretch/aspect="expand"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/dialogue_manager/plugin.cfg")
+enabled=PackedStringArray("res://addons/dialogue_manager/plugin.cfg", "res://addons/parallax2d_preview/plugin.cfg")
 
 [input]
 
@@ -77,6 +77,11 @@ ui_down={
 , Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":83,"key_label":0,"unicode":115,"location":0,"echo":false,"script":null)
 ]
 }
+ui_text_indent={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":16,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194306,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
 ui_interact={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":69,"key_label":0,"unicode":101,"location":0,"echo":false,"script":null)
@@ -87,6 +92,18 @@ ui_attack={
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":70,"key_label":0,"unicode":102,"location":0,"echo":false,"script":null)
 ]
 }
+jump={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":32,"key_label":0,"unicode":32,"location":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194320,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":87,"key_label":0,"unicode":119,"location":0,"echo":false,"script":null)
+]
+}
+transform={
+"deadzone": 0.2,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194306,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
 
 [input_devices]
 
@@ -94,7 +111,7 @@ pointing/emulate_touch_from_mouse=true
 
 [internationalization]
 
-locale/translations_pot_files=PackedStringArray("res://assets/dialogues/npcs/old_man/old_man.dialogue", "res://assets/dialogues/novels/novel_start.dialogue", "res://assets/dialogues/novels/first_in_pub.dialogue", "res://assets/dialogues/conditions_example.dialogue", "res://assets/dialogues/npcs/conditions_example.dialogue", "res://assets/dialogues/npcs/lumi_alone.dialogue", "res://assets/dialogues/npcs/lumi_together.dialogue", "res://assets/dialogues/signs/hidden_sign.dialogue")
+locale/translations_pot_files=PackedStringArray("res://assets/dialogues/npcs/old_man/old_man.dialogue", "res://assets/dialogues/novels/novel_start.dialogue", "res://assets/dialogues/novels/first_in_pub.dialogue", "res://assets/dialogues/conditions_example.dialogue", "res://assets/dialogues/npcs/conditions_example.dialogue", "res://assets/dialogues/npcs/lumi_alone.dialogue", "res://assets/dialogues/npcs/lumi_together.dialogue", "res://assets/dialogues/signs/hidden_sign.dialogue", "res://assets/dialogues/npcs/0_forest/devil_labyrinth.dialogue")
 
 [layer_names]
 

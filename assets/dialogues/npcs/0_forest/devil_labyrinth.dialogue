@@ -1,0 +1,4 @@
+~ start
+Черт-картограф: А ты посмотри с другого угла
+do Game.load_level("res://levels/0_forest/2_forest.tscn")
+=> END

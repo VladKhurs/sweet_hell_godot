@@ -98,10 +98,10 @@ animations = [{
 }]
 
 [node name="BaseNPC" unique_id=381813978 instance=ExtResource("1_xj21f")]
+visible = false
 npc_id = &"lumi_dialogue"
 
 [node name="Sprite2D" parent="." index="0" unique_id=882879531]
-visible = false
 texture = ExtResource("2_ijdbo")
 
 [node name="CollisionShape2D" parent="." index="1" unique_id=1518658154]

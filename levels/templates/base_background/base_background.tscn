@@ -8,7 +8,17 @@ script = ExtResource("1_0r2yd")
 bg_far = ExtResource("2_po5qj")
 
 [node name="FarLayer" type="Parallax2D" parent="." unique_id=279554651]
-scroll_scale = Vector2(0.7, 0.7)
+scroll_scale = Vector2(0.2, 0.2)
 
 [node name="Sprite2D" type="Sprite2D" parent="FarLayer" unique_id=902274915]
 centered = false
+
+[node name="AfterLayer" type="Parallax2D" parent="." unique_id=220266198]
+scroll_scale = Vector2(0.3, 0.15)
+
+[node name="NearLayer" type="Parallax2D" parent="." unique_id=25951632]
+scroll_scale = Vector2(0.6, 0.4)
+
+[node name="BeforeLayer" type="Parallax2D" parent="." unique_id=2040717418]
+z_index = 500
+scroll_scale = Vector2(1.4, 1.15)

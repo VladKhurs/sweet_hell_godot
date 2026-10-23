@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://b5b6qq2wor7fd"]
+
+[ext_resource type="Texture2D" uid="uid://c1065by47e46" path="res://assets/images/locations/0_country/before.png" id="1_d3i15"]
+
+[node name="ImageBefore" type="Sprite2D" unique_id=1191610683]
+texture = ExtResource("1_d3i15")

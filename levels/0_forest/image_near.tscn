@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://dknmcgasxlnqv"]
+
+[ext_resource type="Texture2D" uid="uid://cjgpvfgbs86vl" path="res://assets/images/locations/0_country/near.png" id="1_mh6ne"]
+
+[node name="ImageNear" type="Sprite2D" unique_id=1191610683]
+texture_filter = 1
+texture = ExtResource("1_mh6ne")

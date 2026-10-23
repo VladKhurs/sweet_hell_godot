@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cjmg8j0achqvc"]
+
+[ext_resource type="Texture2D" uid="uid://cngdw0tymkpwl" path="res://assets/images/locations/0_country/after.png" id="1_p6drh"]
+
+[node name="ImageAfter" type="Sprite2D" unique_id=1191610683]
+texture = ExtResource("1_p6drh")

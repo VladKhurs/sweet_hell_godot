@@ -3,8 +3,6 @@ class_name MoveJoystick
 
 @export var max_radius: float = 40.0
 @export var deadzone: float = 0.15
-@export var jump_threshold: float = 0.45
-@export var jump_action: StringName = &"ui_accept"
 @export var default_offset: Vector2 = Vector2(110.0, 110.0)
 
 @export var base_color: Color = Color(1, 1, 1, 0.2)
@@ -55,9 +53,6 @@ func _apply_input(vec: Vector2) -> void:
 	_set_axis("ui_left", "ui_right", norm.x)
 	_set_axis("ui_up", "ui_down", norm.y)
 
-	var should_jump := GameState.current_mode == &"platformer" and vec.y < -jump_threshold
-	Input.action_press(jump_action) if should_jump else Input.action_release(jump_action)
-
 func _set_axis(neg: StringName, pos: StringName, val: float) -> void:
 	if val > 0.05:
 		Input.action_press(pos, val)
@@ -74,7 +69,6 @@ func _reset_joystick() -> void:
 	is_touched = false
 	knob_offset = Vector2.ZERO
 	base_pos = _get_default_pos()
-	for action in [&"ui_left", &"ui_right", &"ui_up", &"ui_down", jump_action]:
+	for action in [&"ui_left", &"ui_right", &"ui_up", &"ui_down"]:
 		Input.action_release(action)
 	queue_redraw()
-	

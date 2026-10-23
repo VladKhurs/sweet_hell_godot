@@ -111,6 +111,12 @@ $> GameState.set_character_state("old_man", "met", true)
 
 => END
 <!<ENDOFFILE!<<
+>>!>FILEPATH: ./assets/dialogues/npcs/0_forest/devil_labyrinth.dialogue
+~ start
+Черт-картограф: А ты посмотри с другого угла
+do Game.load_level("res://levels/0_forest/2_forest.tscn")
+=> END
+<!<ENDOFFILE!<<
 >>!>FILEPATH: ./assets/dialogues/novels/novel_start.dialogue
 ~ start
 
@@ -179,7 +185,7 @@ A как она прошла здесь?
 # meta-default: true
 extends _BASE_
 
-роолллоррррррооолдролоррррроооллллллоооррррррооллллоорррррррпппаавооллллллропарппааааыыыыывввввннннкккксссрррооооееееммммввввегнешкгнгшнеорпопопорпаауупп
+
 func tick(actor: Node, blackboard: Blackboard) -> int:
 	return SUCCESS
 
@@ -216,6 +222,28 @@ func finish() -> void:
 		player.set_controls_enabled(true)
 
 <!<ENDOFFILE!<<
+>>!>FILEPATH: ./levels/templates/base_background/base_background.gd
+extends Node2D
+
+@export var bg_far: Texture2D
+
+@onready var far_layer: Parallax2D = $FarLayer
+@onready var far_sprite: Sprite2D = $FarLayer/Sprite2D
+
+func _ready() -> void:
+	z_index = -100
+	_apply_texture(far_layer, far_sprite, bg_far)
+
+func _apply_texture(layer: Parallax2D, sprite: Sprite2D, tex: Texture2D) -> void:
+	if tex:
+		sprite.texture = tex
+		sprite.scale = Vector2(1.7, 1.7)
+		layer.repeat_size = tex.get_size() * 1.7
+		layer.visible = true
+	else:
+		layer.visible = false
+
+<!<ENDOFFILE!<<
 >>!>FILEPATH: ./levels/templates/base_level/base_level.gd
 extends Node2D
 
@@ -223,15 +251,12 @@ extends Node2D
 
 const PLAYER_SCENE = preload("res://entities/characters/player/player.tscn")
 
-
 func _ready():
 	GameState.set_location(scene_file_path)	
 	setup_level()
 
-
 func _enter_tree() -> void:
 	GameState.set_mode(level_mode)
-
 
 func setup_level():
 	var player = get_tree().root.find_child("Player", true, false)
@@ -486,8 +511,6 @@ class_name MoveJoystick
 
 @export var max_radius: float = 40.0
 @export var deadzone: float = 0.15
-@export var jump_threshold: float = 0.45
-@export var jump_action: StringName = &"ui_accept"
 @export var default_offset: Vector2 = Vector2(110.0, 110.0)
 
 @export var base_color: Color = Color(1, 1, 1, 0.2)
@@ -538,9 +561,6 @@ func _apply_input(vec: Vector2) -> void:
 	_set_axis("ui_left", "ui_right", norm.x)
 	_set_axis("ui_up", "ui_down", norm.y)
 
-	var should_jump := GameState.current_mode == &"platformer" and vec.y < -jump_threshold
-	Input.action_press(jump_action) if should_jump else Input.action_release(jump_action)
-
 func _set_axis(neg: StringName, pos: StringName, val: float) -> void:
 	if val > 0.05:
 		Input.action_press(pos, val)
@@ -557,24 +577,18 @@ func _reset_joystick() -> void:
 	is_touched = false
 	knob_offset = Vector2.ZERO
 	base_pos = _get_default_pos()
-	for action in [&"ui_left", &"ui_right", &"ui_up", &"ui_down", jump_action]:
+	for action in [&"ui_left", &"ui_right", &"ui_up", &"ui_down"]:
 		Input.action_release(action)
 	queue_redraw()
-	
 
 <!<ENDOFFILE!<<
 >>!>FILEPATH: ./widgets/hud/touch/touch_button.gd
 extends Button
 class_name TouchButton
 
-@export var action_name: StringName = &"ui_attack"
+@export var action_name: StringName = &"ui_accept"
 
 var touch_id: int = -1
-
-
-func _ready() -> void:
-	action_mode = BaseButton.ACTION_MODE_BUTTON_PRESS
-
 
 func _gui_input(event: InputEvent) -> void:
 	if event is InputEventScreenTouch:
@@ -585,9 +599,13 @@ func _gui_input(event: InputEvent) -> void:
 			touch_id = -1
 			_send_action(false)
 
-
 func _send_action(is_pressed: bool) -> void:
-	var ev = InputEventAction.new()
+	if is_pressed:
+		Input.action_press(action_name)
+	else:
+		Input.action_release(action_name)
+
+	var ev := InputEventAction.new()
 	ev.action = action_name
 	ev.pressed = is_pressed
 	Input.parse_input_event(ev)
@@ -774,7 +792,7 @@ func change_movement_mode(mode_name: String) -> void:
 		if (mode_name == "grid" or mode_name == "beat") and current_movement.has_method("snap_to_grid_center"):
 			current_movement.snap_to_grid_center()
 
-	var target_offset := -15.0 if mode_name == "platformer" else 0.0
+	var target_offset := -10.0 if mode_name == "platformer" else 0.0
 	create_tween().tween_property(camera, "offset:y", target_offset, 0.3).set_ease(Tween.EASE_OUT)
 
 func check_interaction() -> void:
@@ -946,17 +964,16 @@ extends Node
 @onready var player: CharacterBody2D = get_parent().get_parent()
 
 @export var speed: float = 120.0
-@export var acceleration: float = 1000.0
-@export var friction: float = 1200.0
+@export var acceleration: float = 700.0
+@export var friction: float =  1000.0
 
-@export var jump_velocity: float = -215.0
-@export var gravity: float = 600.0
-@export var fall_gravity_multiplier: float = 1.1
-@export var max_fall_speed: float = 360.0
+@export var jump_velocity: float = -185.0
+@export var gravity: float = 700.0
+@export var fall_multiplier: float = 1.5
+@export var max_fall_speed: float = 380.0
 
-@export var coyote_time: float = 0.10
-@export var jump_buffer_time: float = 0.10
-@export var jump_cut: float = 0.38
+@export var coyote_time: float = 0.1
+@export var jump_buffer_time: float = 0.1
 
 var enabled: bool = false
 var coyote_timer: float = 0.0
@@ -966,7 +983,8 @@ func execute(delta: float) -> void:
 	if not enabled: return
 
 	coyote_timer = coyote_time if player.is_on_floor() else maxf(coyote_timer - delta, 0.0)
-	if Input.is_action_just_pressed("ui_accept"):
+
+	if Input.is_action_just_pressed("jump"):
 		jump_buffer_timer = jump_buffer_time
 	else:
 		jump_buffer_timer = maxf(jump_buffer_timer - delta, 0.0)
@@ -975,12 +993,10 @@ func execute(delta: float) -> void:
 		player.velocity.y = jump_velocity
 		coyote_timer = 0.0
 		jump_buffer_timer = 0.0
-	elif Input.is_action_just_released("ui_accept") and player.velocity.y < 0.0:
-		player.velocity.y *= jump_cut
 
 	if not player.is_on_floor():
-		var cur_gravity := gravity * (fall_gravity_multiplier if player.velocity.y > 0.0 else 1.0)
-		player.velocity.y = minf(player.velocity.y + cur_gravity * delta, max_fall_speed)
+		var current_gravity := gravity * fall_multiplier if player.velocity.y > 0.0 else gravity
+		player.velocity.y = minf(player.velocity.y + current_gravity * delta, max_fall_speed)
 
 	var dir := Input.get_axis("ui_left", "ui_right")
 	if dir != 0.0:
@@ -990,7 +1006,6 @@ func execute(delta: float) -> void:
 		player.velocity.x = move_toward(player.velocity.x, 0.0, friction * delta)
 
 	player.move_and_slide()
-	
 
 <!<ENDOFFILE!<<
 >>!>FILEPATH: ./entities/characters/player/movement_logic/grid_movement.gd
