@@ -1,0 +1,16 @@
+[remap]
+
+importer="dialogue_manager"
+importer_version=15
+type="Resource"
+uid="uid://7kcl8b4taewq"
+path="res://.godot/imported/0_cp.dialogue-191813f0c42a77fdd07585a11f234aa7.tres"
+
+[deps]
+
+source_file="res://assets/dialogues_en/checkpoints/0_cp.dialogue"
+dest_files=["res://.godot/imported/0_cp.dialogue-191813f0c42a77fdd07585a11f234aa7.tres"]
+
+[params]
+
+defaults=true

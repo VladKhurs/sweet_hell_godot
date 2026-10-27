@@ -37,10 +37,13 @@ var move_direction: float = 1.0
 var target: Node2D = null
 var is_dead: bool = false
 var is_knocked_back: bool = false
+var _hit_tween: Tween
+var _normal_sprite_modulate: Color
 
 func _ready() -> void:
 	current_health = max_health
 	sprite.texture = enemy_sprite
+	_normal_sprite_modulate = sprite.modulate
 	detection_area.body_entered.connect(func(b): if b.is_in_group("player"): target = b; state = State.CHASE)
 	detection_area.body_exited.connect(func(b): if b == target: target = null; state = State.PATROL)
 	damage_area.body_entered.connect(_on_damage_body_entered)
@@ -94,6 +97,12 @@ func take_damage(amount: int) -> void:
 	current_health = maxi(current_health - amount, 0)
 	if current_health <= 0:
 		die()
+	else:
+		if _hit_tween and _hit_tween.is_valid():
+			_hit_tween.kill()
+		sprite.modulate = Color("f667af")
+		_hit_tween = create_tween()
+		_hit_tween.tween_property(sprite, "modulate", _normal_sprite_modulate, 0.12)
 
 func die() -> void:
 	if is_dead: return
@@ -122,4 +131,3 @@ func knockback(direction: Vector2) -> void:
 	is_knocked_back = true
 	velocity = Vector2(direction.x * knockback_force, -knockback_upward_force)
 	get_tree().create_timer(knockback_time).timeout.connect(func(): is_knocked_back = false)
-	

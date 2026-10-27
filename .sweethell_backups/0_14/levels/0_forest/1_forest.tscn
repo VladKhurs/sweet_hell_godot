@@ -1,0 +1,49 @@
+[gd_scene format=4 uid="uid://bpwdnjwkoaiel"]
+
+[ext_resource type="PackedScene" uid="uid://gp5sqeney20h" path="res://levels/templates/base_level/base_level.tscn" id="1_6raau"]
+[ext_resource type="PackedScene" uid="uid://be4d7bs57kg6j" path="res://levels/templates/base_tile_map.tscn" id="2_yybkj"]
+[ext_resource type="PackedScene" uid="uid://xhrkjmbl76dc" path="res://entities/characters/npcs/base_npc/base_npc.tscn" id="3_oj3h0"]
+[ext_resource type="PackedScene" uid="uid://cxco2tmuoio6h" path="res://levels/0_forest/country_devil.tscn" id="4_80v0u"]
+[ext_resource type="Resource" uid="uid://ch6llo6faw66c" path="res://assets/dialogues/npcs/0_forest/devil_labyrinth.dialogue" id="4_se0ja"]
+[ext_resource type="PackedScene" uid="uid://o4q26osfiusy" path="res://entities/environment/spikes/spikes.tscn" id="6_wkxse"]
+[ext_resource type="PackedScene" path="res://entities/environment/checkpoint/checkpoint.tscn" id="7_dvn8w"]
+[ext_resource type="PackedScene" uid="uid://cq1f0f7t0fu8y" path="res://entities/pickups/weapons/pan/Pan.tscn" id="8_dvn8w"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dgfsc"]
+
+[node name="BaseLevel" unique_id=2086354120 instance=ExtResource("1_6raau")]
+level_mode = "platformer"
+
+[node name="BaseTileMap" parent="." index="3" unique_id=209746444 instance=ExtResource("2_yybkj")]
+tile_map_data = PackedByteArray("AAAAAAcAAAABAAEAAAABAAcAAAABAAEAAAACAAcAAAABAAEAAAADAAcAAAABAAEAAAAEAAcAAAABAAEAAAAFAAcAAAABAAEAAAAGAAcAAAABAAEAAAAHAAcAAAABAAEAAAAIAAcAAAABAAEAAAAJAAcAAAABAAEAAAAKAAcAAAABAAEAAAALAAcAAAABAAEAAAAMAAcAAAABAAEAAAANAAcAAAABAAEAAAAOAAcAAAABAAEAAAAPAAcAAAABAAEAAAAQAAcAAAABAAEAAAARAAcAAAABAAEAAAASAAcAAAABAAEAAAATAAcAAAABAAEAAAAUAAcAAAABAAEAAAAVAAcAAAABAAEAAAAWAAQAAAABAAEAAAAWAAUAAAABAAEAAAAWAAYAAAABAAEAAAAWAAcAAAABAAEAAAAXAAcAAAABAAEAAAAXAAYAAAABAAEAAAAXAAUAAAABAAEAAAAXAAQAAAABAAEAAAAYAAQAAAABAAEAAAAYAAUAAAABAAEAAAAZAAUAAAABAAEAAAAZAAYAAAABAAEAAAAZAAcAAAABAAEAAAAYAAcAAAABAAEAAAAYAAYAAAABAAEAAAAZAAQAAAABAAEAAAAaAAQAAAABAAEAAAAaAAUAAAABAAEAAAAaAAYAAAABAAEAAAAaAAcAAAABAAEAAAAbAAYAAAABAAEAAAAbAAUAAAABAAEAAAAbAAQAAAABAAEAAAAbAAcAAAABAAEAAAAcAAcAAAABAAEAAAAcAAYAAAABAAEAAAAcAAUAAAABAAEAAAAcAAQAAAABAAEAAAAdAAUAAAABAAEAAAAdAAYAAAABAAEAAAAdAAcAAAABAAEAAAAdAAQAAAABAAEAAAAeAAQAAAABAAEAAAAeAAUAAAABAAEAAAAeAAYAAAABAAEAAAAeAAcAAAABAAEAAAAfAAcAAAABAAEAAAAfAAYAAAABAAEAAAAfAAUAAAABAAEAAAAfAAQAAAABAAEAAAAgAAQAAAABAAEAAAAgAAUAAAABAAEAAAAgAAYAAAABAAEAAAAgAAcAAAABAAEAAAAhAAcAAAABAAEAAAAhAAYAAAABAAEAAAAhAAUAAAABAAEAAAAhAAQAAAABAAEAAAAiAAQAAAABAAEAAAAiAAUAAAABAAEAAAAiAAYAAAABAAEAAAAiAAcAAAABAAEAAAAjAAcAAAABAAEAAAAjAAYAAAABAAEAAAAjAAUAAAABAAEAAAAjAAQAAAABAAEAAAAkAAQAAAABAAEAAAAkAAUAAAABAAEAAAAkAAYAAAABAAEAAAAkAAcAAAABAAEAAAAlAAcAAAABAAEAAAAlAAYAAAABAAEAAAAlAAUAAAABAAEAAAAlAAQAAAABAAEAAAAmAAQAAAABAAEAAAAmAAUAAAABAAEAAAAmAAYAAAABAAEAAAAmAAcAAAABAAEAAAAnAAcAAAABAAEAAAAnAAYAAAABAAEAAAAnAAUAAAABAAEAAAAnAAQAAAABAAEAAAAoAAQAAAABAAEAAAAoAAUAAAABAAEAAAAoAAYAAAABAAEAAAAoAAcAAAABAAEAAAA=")
+collision_visibility_mode = 0
+
+[node name="BaseNPC" parent="." index="4" unique_id=381813978 instance=ExtResource("3_oj3h0")]
+position = Vector2(172, 46)
+npc_id = &"devil_mapmaker"
+dialogue_resource = ExtResource("4_se0ja")
+metadata/_edit_group_ = true
+
+[node name="CountryDevil" parent="BaseNPC" index="2" unique_id=1477498197 instance=ExtResource("4_80v0u")]
+position = Vector2(0, 1)
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="BaseNPC" index="3" unique_id=1216044614]
+shape = SubResource("RectangleShape2D_dgfsc")
+
+[node name="Spikes" parent="." index="5" unique_id=69060913 instance=ExtResource("6_wkxse")]
+position = Vector2(98, 50)
+
+[node name="Spikes2" parent="." index="6" unique_id=1137522019 instance=ExtResource("6_wkxse")]
+position = Vector2(257, 21)
+
+[node name="Checkpoint" parent="." index="7" unique_id=1321633594 instance=ExtResource("7_dvn8w")]
+position = Vector2(71, 48)
+checkpoint_id = "test_1"
+save_dialogue_file = "uid://dhho45vbcnc37"
+
+[node name="Checkpoint2" parent="." index="8" unique_id=797847060 instance=ExtResource("7_dvn8w")]
+position = Vector2(217, 25)
+checkpoint_id = "test_2"
+
+[node name="Pan" parent="." index="9" unique_id=1207583157 instance=ExtResource("8_dvn8w")]
+position = Vector2(186, 23)

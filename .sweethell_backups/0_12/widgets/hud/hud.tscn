@@ -1,0 +1,130 @@
+[gd_scene format=3 uid="uid://d327j6atrax0v"]
+
+[ext_resource type="Script" uid="uid://vmagkjbohyxw" path="res://widgets/hud/hud.gd" id="1_otlg6"]
+[ext_resource type="Script" uid="uid://df685a4a1642m" path="res://widgets/hud/touch/move_joystick.gd" id="2_t87lf"]
+[ext_resource type="Script" uid="uid://b4l3be1vy8g26" path="res://widgets/hud/touch/touch_button.gd" id="3_qpvlk"]
+
+[ext_resource type="Script" path="res://widgets/hud/pause_touch_button.gd" id="4_pause"]
+
+[node name="HUD" type="CanvasLayer" unique_id=588394198]
+script = ExtResource("1_otlg6")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=167789094]
+custom_maximum_size = Vector2(100, 100)
+offset_right = 29.0
+offset_bottom = 7.0
+
+[node name="ColorRect3" type="ColorRect" parent="HBoxContainer" unique_id=1721529912]
+custom_minimum_size = Vector2(7, 7)
+custom_maximum_size = Vector2(7, 7)
+layout_mode = 2
+color = Color(0.84313726, 0, 0.5019608, 1)
+
+[node name="ColorRect2" type="ColorRect" parent="HBoxContainer" unique_id=1197765777]
+custom_minimum_size = Vector2(7, 7)
+custom_maximum_size = Vector2(7, 7)
+layout_mode = 2
+color = Color(0.84313726, 0, 0.5019608, 1)
+
+[node name="ColorRect" type="ColorRect" parent="HBoxContainer" unique_id=1263603922]
+custom_minimum_size = Vector2(7, 7)
+custom_maximum_size = Vector2(7, 7)
+layout_mode = 2
+color = Color(0.84313726, 0, 0.5019608, 1)
+
+[node name="DialogueBox" type="Panel" parent="." unique_id=205281743]
+visible = false
+offset_left = 94.0
+offset_top = 4.0
+offset_right = 227.0
+offset_bottom = 32.0
+
+[node name="DialogueLabel" type="Label" parent="DialogueBox" unique_id=1985865946]
+layout_mode = 0
+offset_right = 132.0
+offset_bottom = 27.0
+
+[node name="InteractionLabel" type="Label" parent="." unique_id=1740956403]
+visible = false
+offset_left = 35.0
+offset_top = -3.0
+offset_right = 54.0
+offset_bottom = 20.0
+text = "E"
+
+[node name="TouchControls" type="Control" parent="." unique_id=96672292]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="MoveJoystick" type="Control" parent="TouchControls" unique_id=1731575480]
+layout_mode = 1
+anchor_right = 0.5
+anchor_bottom = 1.0
+script = ExtResource("2_t87lf")
+default_offset = Vector2(50, 50)
+
+[node name="ActionButtons" type="Control" parent="TouchControls" unique_id=575519947]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="AttackButton" type="Button" parent="TouchControls/ActionButtons" unique_id=251583366]
+layout_mode = 0
+offset_left = 228.0
+offset_top = 100.0
+offset_right = 301.0
+offset_bottom = 131.0
+text = "АТК"
+script = ExtResource("3_qpvlk")
+
+[node name="InteractButton2" type="Button" parent="TouchControls/ActionButtons" unique_id=1222150262]
+layout_mode = 0
+offset_left = 228.0
+offset_top = 61.0
+offset_right = 270.0
+offset_bottom = 92.0
+text = "Tab"
+script = ExtResource("3_qpvlk")
+action_name = &"transform"
+
+[node name="InteractButton" type="Button" parent="TouchControls/ActionButtons" unique_id=1048168702]
+layout_mode = 0
+offset_left = 277.0
+offset_top = 61.0
+offset_right = 299.0
+offset_bottom = 92.0
+text = "E"
+script = ExtResource("3_qpvlk")
+action_name = &"ui_interact"
+
+[node name="JumpButton" type="Button" parent="TouchControls/ActionButtons" unique_id=494542288]
+layout_mode = 0
+offset_left = 229.0
+offset_top = 135.0
+offset_right = 302.0
+offset_bottom = 166.0
+text = "ПРЖ"
+script = ExtResource("3_qpvlk")
+
+[node name="ToggleTouchButton" type="Button" parent="." unique_id=1169626407]
+visible = false
+offset_left = 39.0
+offset_top = 2.0
+offset_right = 95.0
+offset_bottom = 33.0
+text = "on/off"
+
+[node name="PauseButton" type="Button" parent="TouchControls"]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 3.0
+offset_top = 11.0
+offset_right = 27.0
+offset_bottom = 30.0
+mouse_default_cursor_shape = 2
+script = ExtResource("4_pause")

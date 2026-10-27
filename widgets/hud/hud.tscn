@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://vmagkjbohyxw" path="res://widgets/hud/hud.gd" id="1_otlg6"]
 [ext_resource type="Script" uid="uid://df685a4a1642m" path="res://widgets/hud/touch/move_joystick.gd" id="2_t87lf"]
 [ext_resource type="Script" uid="uid://b4l3be1vy8g26" path="res://widgets/hud/touch/touch_button.gd" id="3_qpvlk"]
+[ext_resource type="Script" uid="uid://bq41wprhljopd" path="res://widgets/hud/pause_touch_button.gd" id="4_pause"]
 
 [node name="HUD" type="CanvasLayer" unique_id=588394198]
 script = ExtResource("1_otlg6")
@@ -64,50 +65,68 @@ layout_mode = 1
 anchor_right = 0.5
 anchor_bottom = 1.0
 script = ExtResource("2_t87lf")
-default_offset = Vector2(50, 50)
+max_radius = 32.0
+default_offset = Vector2(50, 65)
 
 [node name="ActionButtons" type="Control" parent="TouchControls" unique_id=575519947]
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -103.0
+offset_top = -119.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
 
 [node name="AttackButton" type="Button" parent="TouchControls/ActionButtons" unique_id=251583366]
 layout_mode = 0
-offset_left = 228.0
-offset_top = 100.0
-offset_right = 301.0
-offset_bottom = 131.0
+offset_left = 11.0
+offset_top = 39.0
+offset_right = 84.0
+offset_bottom = 70.0
 text = "АТК"
 script = ExtResource("3_qpvlk")
+action_name = &"ui_attack"
 
 [node name="InteractButton2" type="Button" parent="TouchControls/ActionButtons" unique_id=1222150262]
 layout_mode = 0
-offset_left = 228.0
-offset_top = 61.0
-offset_right = 270.0
-offset_bottom = 92.0
+offset_left = 11.0
+offset_right = 53.0
+offset_bottom = 31.0
 text = "Tab"
 script = ExtResource("3_qpvlk")
 action_name = &"transform"
 
 [node name="InteractButton" type="Button" parent="TouchControls/ActionButtons" unique_id=1048168702]
 layout_mode = 0
-offset_left = 277.0
-offset_top = 61.0
-offset_right = 299.0
-offset_bottom = 92.0
+offset_left = 60.0
+offset_right = 82.0
+offset_bottom = 31.0
 text = "E"
 script = ExtResource("3_qpvlk")
 action_name = &"ui_interact"
 
 [node name="JumpButton" type="Button" parent="TouchControls/ActionButtons" unique_id=494542288]
 layout_mode = 0
-offset_left = 229.0
-offset_top = 135.0
-offset_right = 302.0
-offset_bottom = 166.0
+offset_left = 12.0
+offset_top = 74.0
+offset_right = 85.0
+offset_bottom = 105.0
 text = "ПРЖ"
 script = ExtResource("3_qpvlk")
+action_name = &"jump"
+
+[node name="PauseButton" type="Button" parent="TouchControls" unique_id=690979368]
+layout_mode = 1
+offset_left = 3.0
+offset_top = 11.0
+offset_right = 27.0
+offset_bottom = 30.0
+mouse_default_cursor_shape = 2
+script = ExtResource("4_pause")
 
 [node name="ToggleTouchButton" type="Button" parent="." unique_id=1169626407]
 visible = false

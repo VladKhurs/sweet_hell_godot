@@ -13,13 +13,19 @@ var touch_id: int = -1
 var base_pos: Vector2
 var knob_offset: Vector2 = Vector2.ZERO
 var is_touched: bool = false
+var _original_radius: float
+var _original_offset: Vector2
 
 func _ready() -> void:
+	_original_radius = max_radius
+	_original_offset = default_offset
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	base_pos = _get_default_pos()
 
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_RESIZED and not is_touched:
+	if what == NOTIFICATION_PAUSED:
+		_notification_paused()
+	elif what == NOTIFICATION_RESIZED and not is_touched:
 		base_pos = _get_default_pos()
 		queue_redraw()
 
@@ -72,3 +78,21 @@ func _reset_joystick() -> void:
 	for action in [&"ui_left", &"ui_right", &"ui_up", &"ui_down"]:
 		Input.action_release(action)
 	queue_redraw()
+
+func set_control_scale(value: float) -> void:
+	max_radius = _original_radius * value
+	default_offset = _original_offset * value
+	if is_touched:
+		_reset_joystick()
+	base_pos = _get_default_pos()
+	queue_redraw()
+
+
+func _exit_tree() -> void:
+	if is_touched:
+		_reset_joystick()
+
+
+func _notification_paused() -> void:
+	if is_touched:
+		_reset_joystick()

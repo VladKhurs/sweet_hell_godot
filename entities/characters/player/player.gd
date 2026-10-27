@@ -11,6 +11,7 @@ extends CharacterBody2D
 @onready var attack_shape: CollisionShape2D = $AttackArea/CollisionShape2D
 @onready var weapon_pivot: Node2D = $WeaponPivot
 @onready var weapon_sprite: Sprite2D = $WeaponPivot/WeaponSprite
+@onready var feedback: PlayerFeedback = $Feedback
 @onready var human_sprite_offset: Vector2 = anim.offset
 @onready var human_sprite_position: Vector2 = anim.position
 @onready var penguin_shape_rest_rotation: float = penguin_shape.rotation
@@ -18,7 +19,6 @@ extends CharacterBody2D
 @export var penguin_sprite_offset: Vector2 = Vector2.ZERO
 @export var penguin_turn_speed: float = 16.0
 @export var attack_visual_time: float = 0.12
-@export var attack_recoil_force: float = 120.0
 @export var attack_recoil_x: float = 100.0
 @export var attack_recoil_y: float = -40.0
 
@@ -98,6 +98,8 @@ func set_penguin(value: bool, force: bool = false) -> void:
 	body_shape.set_deferred("disabled", value)
 	penguin_shape.set_deferred("disabled", not value)
 	anim.offset = penguin_sprite_offset if value else human_sprite_offset
+	if not force:
+		feedback.on_transform()
 
 func _has_room(shape_node: CollisionShape2D) -> bool:
 	var query := PhysicsShapeQueryParameters2D.new()
@@ -194,6 +196,7 @@ func _update_animations() -> void:
 		_play("idle")
 
 func _on_damaged() -> void:
+	feedback.on_hurt()
 	anim.modulate = Color.RED
 	create_tween().tween_property(anim, "modulate", Color.WHITE, 0.2)
 
@@ -216,27 +219,30 @@ func attack() -> void:
 	last_attack_time = now
 
 	_play_attack_visual(weapon)
-	
+	feedback.on_attack()
+
 	var hit: bool = false
+	var hit_position := Vector2.ZERO
 	for body in attack_area.get_overlapping_bodies():
 		if body == self:
 			continue
 		
 		if body.has_method("take_damage"):
+			if not hit:
+				hit_position = body.global_position
 			body.take_damage(weapon.damage)
 			if body.has_method("knockback"):
 				body.knockback((body.global_position - global_position).normalized())
 			hit = true
 		elif body is StaticBody2D or body is TileMap or body is TileMapLayer:
+			if not hit:
+				hit_position = attack_area.global_position
 			hit = true
 
 	if hit:
+		feedback.on_hit(hit_position)
 		velocity.x = -facing_direction * attack_recoil_x
 		velocity.y = attack_recoil_y
-		move_and_slide()
-
-	if hit:
-		velocity.x = -facing_direction * attack_recoil_force
 		move_and_slide()
 
 

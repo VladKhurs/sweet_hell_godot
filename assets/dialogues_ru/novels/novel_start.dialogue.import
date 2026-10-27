@@ -1,0 +1,16 @@
+[remap]
+
+importer="dialogue_manager"
+importer_version=15
+type="Resource"
+uid="uid://dhpcr8fse37wi"
+path="res://.godot/imported/novel_start.dialogue-8d8d9c15a9c925de0f7c133b73330b63.tres"
+
+[deps]
+
+source_file="res://assets/dialogues_ru/novels/novel_start.dialogue"
+dest_files=["res://.godot/imported/novel_start.dialogue-8d8d9c15a9c925de0f7c133b73330b63.tres"]
+
+[params]
+
+defaults=true

@@ -18,6 +18,7 @@ class_name NovelLevel
 
 var _fade_tween: Tween
 var _current_bg_key: String = ""
+var _active_dialogue: DialogueResource
 
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -35,7 +36,8 @@ func _ready() -> void:
 
 	DialogueManager.got_dialogue.connect(_on_got_dialogue)
 	DialogueManager.dialogue_ended.connect(_on_dialogue_ended)
-	DialogueManager.show_dialogue_balloon(dialogue_resource, dialogue_title, [self])
+	_active_dialogue = DialogueLocale.resolve(dialogue_resource)
+	DialogueManager.show_dialogue_balloon(_active_dialogue, dialogue_title, [self])
 
 func set_bg(image_name: String) -> void:
 	if image_name.is_empty() or image_name == _current_bg_key: return
@@ -80,7 +82,7 @@ func _on_got_dialogue(line: DialogueLine) -> void:
 		set_bg(line.get_tag_value("bg"))
 
 func _on_dialogue_ended(resource: DialogueResource) -> void:
-	if resource != dialogue_resource: return
+	if resource != _active_dialogue: return
 	if not novel_id.is_empty():
 		GameState.set_world_state(novel_id, "completed", true)
 	_go_to_next_level()

@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="sweet_hell"
-run/main_scene="uid://d4aowkirbt57n"
+run/main_scene="res://widgets/menus/main_menu.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
 
@@ -21,6 +21,15 @@ DialogueManager="*uid://c3rodes2l3gxb"
 Game="*uid://bpvaim5o7jso2"
 GameState="*uid://dtanqguql8co8"
 Inventory="*uid://du38vmgn35blr"
+SweetUI="*res://assets/themes/sweet_ui.gd"
+SettingsManager="*res://core/settings_manager.gd"
+PauseManager="*res://core/pause_manager.gd"
+MusicManager="*res://core/music_manager.gd"
+SaveManager="*res://core/save_manager.gd"
+
+[dialogue_manager]
+
+runtime/balloon_path="res://widgets/dialogue/sweet_dialogue_balloon.tscn"
 
 [display]
 
@@ -34,6 +43,10 @@ window/stretch/aspect="expand"
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/dialogue_manager/plugin.cfg", "res://addons/parallax2d_preview/plugin.cfg")
+
+[gui]
+
+theme/custom="res://assets/themes/sweet_hell_theme.tres"
 
 [input]
 
@@ -111,7 +124,7 @@ pointing/emulate_touch_from_mouse=true
 
 [internationalization]
 
-locale/translations_pot_files=PackedStringArray("res://assets/dialogues/npcs/old_man/old_man.dialogue", "res://assets/dialogues/novels/novel_start.dialogue", "res://assets/dialogues/novels/first_in_pub.dialogue", "res://assets/dialogues/conditions_example.dialogue", "res://assets/dialogues/npcs/conditions_example.dialogue", "res://assets/dialogues/npcs/lumi_alone.dialogue", "res://assets/dialogues/npcs/lumi_together.dialogue", "res://assets/dialogues/signs/hidden_sign.dialogue", "res://assets/dialogues/npcs/0_forest/devil_labyrinth.dialogue")
+locale/translations_pot_files=PackedStringArray("res://assets/dialogues/npcs/lumi_alone.dialogue", "res://assets/dialogues/npcs/old_man/old_man.dialogue", "res://assets/dialogues/npcs/0_forest/devil_labyrinth.dialogue", "res://assets/dialogues/npcs/lumi_together.dialogue", "res://assets/dialogues/novels/novel_start.dialogue", "res://assets/dialogues/novels/first_in_pub.dialogue", "res://assets/dialogues/signs/hidden_sign.dialogue", "res://assets/dialogues_ru/checkpoints/0_cp.dialogue", "res://assets/dialogues_ru/novels/novel_start.dialogue", "res://assets/dialogues_ru/novels/first_in_pub.dialogue", "res://assets/dialogues_ru/npcs/lumi_together.dialogue", "res://assets/dialogues_ru/npcs/lumi_alone.dialogue", "res://assets/dialogues_ru/npcs/0_forest/devil_labyrinth.dialogue", "res://assets/dialogues_ru/npcs/old_man/old_man.dialogue", "res://assets/dialogues_ru/signs/hidden_sign.dialogue", "res://assets/dialogues_en/checkpoints/0_cp.dialogue", "res://assets/dialogues_en/novels/novel_start.dialogue", "res://assets/dialogues_en/novels/first_in_pub.dialogue", "res://assets/dialogues_en/npcs/lumi_together.dialogue", "res://assets/dialogues_en/npcs/lumi_alone.dialogue", "res://assets/dialogues_en/npcs/0_forest/devil_labyrinth.dialogue", "res://assets/dialogues_en/npcs/old_man/old_man.dialogue", "res://assets/dialogues_en/signs/hidden_sign.dialogue")
 
 [layer_names]
 

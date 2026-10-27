@@ -1,0 +1,37 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://widgets/hud/tutorial_popup.gd" id="1_popup"]
+
+[node name="TutorialPopup" type="CanvasLayer" groups=["sweet_tutorial_popups"]]
+layer = 12
+script = ExtResource("1_popup")
+
+[node name="Layout" type="CenterContainer" parent="."]
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 30.0
+offset_bottom = 69.0
+mouse_filter = 2
+texture_filter = 1
+
+[node name="Panel" type="PanelContainer" parent="Layout"]
+custom_minimum_size = Vector2(242, 38)
+layout_mode = 2
+mouse_filter = 2
+texture_filter = 1
+
+[node name="Margin" type="MarginContainer" parent="Layout/Panel"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 7
+theme_override_constants/margin_right = 7
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="Message" type="Label" parent="Layout/Panel/Margin"]
+layout_mode = 2
+text = ""
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+mouse_filter = 2

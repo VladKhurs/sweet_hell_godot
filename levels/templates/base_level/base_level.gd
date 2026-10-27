@@ -18,9 +18,19 @@ func setup_level():
 		player = PLAYER_SCENE.instantiate()
 		add_child(player)
 	
-	var spawn_point = $SpawnPoint
+	var spawn_point = get_node_or_null("SpawnPoint")
 	if spawn_point:
 		player.global_position = spawn_point.global_position
+
+	var respawn_id: String = GameState.take_checkpoint_respawn(scene_file_path)
+	if not respawn_id.is_empty():
+		var checkpoint := _find_checkpoint(respawn_id)
+		if checkpoint != null:
+			var marker := checkpoint.get_node_or_null("SpawnMarker") as Marker2D
+			if marker:
+				player.global_position = marker.global_position
+		else:
+			push_warning("Checkpoint not found: " + respawn_id)
 	
 	if player.has_method("change_movement_mode"):
 		player.change_movement_mode(level_mode)
@@ -30,3 +40,9 @@ func setup_level():
 		
 	if level_mode == "beat":
 		$RhythmEngine.play_music()
+
+func _find_checkpoint(checkpoint_id: String) -> Area2D:
+	for node in get_tree().get_nodes_in_group("sweet_checkpoints"):
+		if is_ancestor_of(node) and node.get("checkpoint_id") == checkpoint_id:
+			return node as Area2D
+	return null

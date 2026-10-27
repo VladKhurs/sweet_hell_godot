@@ -6,6 +6,8 @@
 [ext_resource type="PackedScene" uid="uid://xhrkjmbl76dc" path="res://entities/characters/npcs/base_npc/base_npc.tscn" id="5_ydu4h"]
 [ext_resource type="Resource" uid="uid://ch6llo6faw66c" path="res://assets/dialogues/npcs/0_forest/devil_labyrinth.dialogue" id="6_xsbdq"]
 [ext_resource type="PackedScene" uid="uid://cxco2tmuoio6h" path="res://levels/0_forest/country_devil.tscn" id="7_w5ysp"]
+[ext_resource type="PackedScene" uid="uid://o4q26osfiusy" path="res://entities/environment/spikes/spikes.tscn" id="7_xsbdq"]
+[ext_resource type="PackedScene" path="res://entities/environment/checkpoint/checkpoint.tscn" id="8_w5ysp"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_a2osx"]
 
@@ -33,3 +35,10 @@ position = Vector2(0, 1)
 
 [node name="CollisionShape2D2" type="CollisionShape2D" parent="BaseNPC" index="3" unique_id=1002340997]
 shape = SubResource("RectangleShape2D_a2osx")
+
+[node name="Spikes" parent="." index="6" unique_id=69060913 instance=ExtResource("7_xsbdq")]
+position = Vector2(1, 43)
+
+[node name="Checkpoint" parent="." index="7" unique_id=1866681942 instance=ExtResource("8_w5ysp")]
+position = Vector2(32, 40)
+checkpoint_id = "test_3"

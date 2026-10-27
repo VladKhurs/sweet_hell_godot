@@ -18,6 +18,7 @@ extends Node
 
 @export var coyote_time: float = 0.1
 @export var jump_buffer_time: float = 0.1
+@export_range(0.1, 1.0, 0.05) var jump_release_multiplier: float = 0.65
 
 var enabled: bool = false
 var coyote_timer: float = 0.0
@@ -39,6 +40,10 @@ func execute(delta: float) -> void:
 		player.velocity.y = penguin_jump_velocity if is_penguin else jump_velocity
 		coyote_timer = 0.0
 		jump_buffer_timer = 0.0
+		player.feedback.on_jump()
+
+	if Input.is_action_just_released("jump") and player.velocity.y < 0.0:
+		player.velocity.y *= jump_release_multiplier
 
 	if not player.is_on_floor():
 		var current_gravity := gravity * fall_multiplier if player.velocity.y > 0.0 else gravity
@@ -55,4 +60,8 @@ func execute(delta: float) -> void:
 	else:
 		player.velocity.x = move_toward(player.velocity.x, 0.0, slow_down * delta)
 
+	var was_on_floor := player.is_on_floor()
+	var falling_speed := player.velocity.y
 	player.move_and_slide()
+	if not was_on_floor and player.is_on_floor() and falling_speed > 90.0:
+		player.feedback.on_land()

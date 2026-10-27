@@ -89,6 +89,70 @@ $> GameState.set_character_state("old_man", "met", true)
 Старик: Привет.
 => END
 <!<ENDOFFILE!<<
+>>!>FILEPATH: ./assets/dialogues/new_dialogues.txt
+Персонажи на 0.1 локации:
+Фермер 1, стоит у здания: Наконец шумные бездельники ушли. Вот в мое время... 
+*Старый фермер начал бормотать что-то про прошлое*
+
+Фермер 2, стоит у кукурузы: О ДА! СУПЕР КУКУРУЗА! НУЖНО ЕЩЕ УДОБРИТЬ! ТЫ СТАНЕШЬ САМОЙ СЛАДКОЙ!
+
+Странник, стоит на мосту:
+И от куда такой напор?... От куда столько шоколада в земле? Эти поля замечательны!
+*Черт напротив увлечен коричневым фонтаном*
+
+Архитектор, тот что стоит перед завалом:
+Ещё один... Тут что, проходной двор?!
+-Всмысле?
+Для кого я вешал ограждающую ленту?!
+-Я ничего такого не видел
+Что? Здесь происходят востановительные работы. 
+Произошел обвал, а поддерживать камни в воздухе не так уж и просто. 
+Поэтому свали пингвинодрочер!
+
+Не мешай, я концентрирую ауру
+
+Странник, стоит где-то в хламе:
+Хммм... А если из-за здешнего обвала и полился шоколад?...
+Не навредит ли это фермерам?...
+
+Джамшут, сидит где-то на середине паркура, бьет молотком себя по каске. Диалогов нет
+
+Равшан, стучит по летающему камню похожему на ХУЙ. Добраться до него невозможно, поэтому и фраз нету.
+
+Персонажи на локации 0.2: 
+Тут мы снова встречаем трех чертов из начала игры.
+Тактик, стоит у входа в лабиринт:
+-Че стоим?
+А, лошара в костюмчике. Не мешай
+-Так чего стоишь? Просто прыгни и пройди.
+Ебать ты приколист. Посмотри под другим углом
+
+Уже в 2,5д: 
+И что его туда погнало... Надеюсь скоро вернутся с лидером...
+-А че сам не идешь?
+Я че еблан лезть туда?!
+
+Там заблудился Тупой,
+во-вторых пропал Лидер.
+
+Поэтому я просто здесь их подожду.
+
+Лидер, где-то в середине лабиринта: 
+И где же он... 
+Бля... Почему именно тебя тут угораздило встретить?!
+Сейчас не до попускания тебя, отвали
+
+Тупой, почти в конце, но за стеной до конца. Он прыгает как хоумлендер. Фраз нету.
+
+
+
+Начало игры: Полиция моды из 3 чертил пинает нашего гг на ферме. 
+Приходит люми, пиздит чертил. 
+Говорит, что мы милый в этом костюме и бросает нас, сказав, что может встретимся ещё. 
+Она обычно тусит в баре перепутье. 
+Туда ведут все дороги и уходит влево
+
+<!<ENDOFFILE!<<
 >>!>FILEPATH: ./assets/dialogues/npcs/lumi_alone.dialogue
 ~ start
 Люми: Я же говорила, что все дороги ведут сюда!
@@ -242,6 +306,25 @@ func _apply_texture(layer: Parallax2D, sprite: Sprite2D, tex: Texture2D) -> void
 		layer.visible = true
 	else:
 		layer.visible = false
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./levels/templates/base_background/layer_blur.gdshader
+
+shader_type canvas_item;
+render_mode unshaded;
+
+uniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_linear_mipmap;
+uniform float blur : hint_range(0.0, 5.0) = 1.0;
+
+void fragment() {
+    vec4 c = textureLod(screen_texture, SCREEN_UV, blur);
+
+    if (c.a > 0.0001) {
+        c.rgb /= c.a;
+    }
+
+    COLOR *= c;
+}
 
 <!<ENDOFFILE!<<
 >>!>FILEPATH: ./levels/templates/base_level/base_level.gd
@@ -733,17 +816,26 @@ extends CharacterBody2D
 @onready var camera: Camera2D = $Camera2D
 @onready var interaction_area: Area2D = $InteractionArea
 @onready var anim: AnimatedSprite2D = $AnimatedSprite2D
+@onready var body_shape: CollisionShape2D = $CollisionShape2D
+@onready var penguin_shape: CollisionShape2D = $PenguinShape
 @onready var hud: CanvasLayer = get_tree().root.find_child("HUD", true, false)
 @onready var attack_area: Area2D = $AttackArea
 @onready var attack_shape: CollisionShape2D = $AttackArea/CollisionShape2D
 @onready var weapon_pivot: Node2D = $WeaponPivot
 @onready var weapon_sprite: Sprite2D = $WeaponPivot/WeaponSprite
+@onready var human_sprite_offset: Vector2 = anim.offset
+@onready var human_sprite_position: Vector2 = anim.position
+@onready var penguin_shape_rest_rotation: float = penguin_shape.rotation
 
+@export var penguin_sprite_offset: Vector2 = Vector2.ZERO
+@export var penguin_turn_speed: float = 16.0
 @export var attack_visual_time: float = 0.12
 @export var attack_recoil_force: float = 120.0
 @export var attack_recoil_x: float = 100.0
 @export var attack_recoil_y: float = -40.0
 
+var is_penguin: bool = false
+var penguin_rotating: bool = false
 var current_movement: Node = null
 var controls_enabled: bool = true
 var last_attack_time: float = -INF
@@ -754,11 +846,14 @@ func _ready() -> void:
 	Inventory.changed.connect(_update_attack_area)
 	Game.player_damaged.connect(_on_damaged)
 	change_movement_mode(GameState.current_mode)
+	if GameState.is_penguin:
+		set_penguin(true, true)
 	_update_attack_area()
 
 func _physics_process(delta: float) -> void:
 	if controls_enabled and current_movement:
 		current_movement.execute(delta)
+	_update_penguin_rotation(delta)
 
 func _process(_delta: float) -> void:
 	_update_animations()
@@ -771,6 +866,8 @@ func _input(event: InputEvent) -> void:
 		check_interaction()
 	elif event.is_action_pressed("ui_attack"):
 		attack()
+	elif event.is_action_pressed("transform"):
+		set_penguin(not is_penguin)
 
 func set_controls_enabled(value: bool) -> void:
 	controls_enabled = value
@@ -792,8 +889,54 @@ func change_movement_mode(mode_name: String) -> void:
 		if (mode_name == "grid" or mode_name == "beat") and current_movement.has_method("snap_to_grid_center"):
 			current_movement.snap_to_grid_center()
 
+	if is_penguin and not can_be_penguin():
+		set_penguin(false, true)
+
 	var target_offset := -10.0 if mode_name == "platformer" else 0.0
 	create_tween().tween_property(camera, "offset:y", target_offset, 0.3).set_ease(Tween.EASE_OUT)
+
+func can_be_penguin() -> bool:
+	return GameState.current_mode == &"free" or GameState.current_mode == &"platformer"
+
+func set_penguin(value: bool, force: bool = false) -> void:
+	if value == is_penguin: return
+	if value and not can_be_penguin(): return
+
+	var new_shape := penguin_shape if value else body_shape
+	if not force and not _has_room(new_shape): return
+
+	is_penguin = value
+	GameState.is_penguin = value
+	body_shape.set_deferred("disabled", value)
+	penguin_shape.set_deferred("disabled", not value)
+	anim.offset = penguin_sprite_offset if value else human_sprite_offset
+
+func _has_room(shape_node: CollisionShape2D) -> bool:
+	var query := PhysicsShapeQueryParameters2D.new()
+	query.shape = shape_node.shape
+	query.transform = shape_node.global_transform.translated(Vector2(0.0, -0.5))
+	query.collision_mask = collision_mask
+	query.exclude = [get_rid()]
+	return get_world_2d().direct_space_state.intersect_shape(query, 1).is_empty()
+
+func _update_penguin_rotation(delta: float) -> void:
+	var active := is_penguin and current_movement != null and current_movement.name == "free"
+
+	if not active:
+		if penguin_rotating:
+			penguin_rotating = false
+			anim.rotation = 0.0
+			penguin_shape.rotation = penguin_shape_rest_rotation
+			anim.position = human_sprite_position
+			anim.offset = penguin_sprite_offset if is_penguin else human_sprite_offset
+		return
+
+	penguin_rotating = true
+	if velocity.length() > 10.0:
+		anim.rotation = rotate_toward(anim.rotation, velocity.angle(), penguin_turn_speed * delta)
+	penguin_shape.rotation = anim.rotation + penguin_shape_rest_rotation
+	anim.position = penguin_shape.position
+	anim.offset = penguin_sprite_offset - (penguin_shape.position - human_sprite_position) / anim.scale
 
 func check_interaction() -> void:
 	var closest: Node2D = null
@@ -826,28 +969,41 @@ func set_horizontal_facing(dir: float) -> void:
 	anim.flip_h = facing_direction < 0.0
 	_update_attack_area()
 
+func _play(anim_name: String, fallback: String = "idle") -> void:
+	var prefix := "penguin_" if is_penguin else ""
+	if anim.sprite_frames.has_animation(prefix + anim_name):
+		anim.play(prefix + anim_name)
+	else:
+		anim.play(prefix + fallback)
+
 func _update_animations() -> void:
+	if is_penguin and current_movement and current_movement.name == "free":
+		anim.flip_h = false
+		if velocity.length() > 10.0:
+			_play("slide", "walk")
+		else:
+			_play("slide_idle", "idle")
+		return
+
 	if current_movement and current_movement.name == "platformer" and not is_on_floor():
-		anim.play("jump")
+		_play("jump", "walk")
 		return
 
 	if velocity.length() > 10.0:
-		# Если режим платформера — ходьба только влево/вправо
 		if current_movement and current_movement.name == "platformer":
-			anim.play("walk")
+			_play("walk")
 		else:
-			# В свободном режиме определяем преобладающую ось движения:
 			if absf(velocity.y) > absf(velocity.x):
 				anim.flip_h = false
 				if velocity.y > 0.0:
-					anim.play("bottom")
+					_play("bottom", "walk")
 				else:
-					anim.play("top")
+					_play("top", "walk")
 			else:
 				set_horizontal_facing(velocity.x)
-				anim.play("walk")
+				_play("walk")
 	else:
-		anim.play("idle")
+		_play("idle")
 
 func _on_damaged() -> void:
 	anim.modulate = Color.RED
@@ -911,22 +1067,66 @@ func _play_attack_visual(weapon: WeaponData) -> void:
 		weapon_sprite.visible = false
 		weapon_pivot.rotation_degrees = 0.0
 	)
-	
 
 <!<ENDOFFILE!<<
->>!>FILEPATH: ./entities/characters/player/movement_logic/free_movement.gd
+>>!>FILEPATH: ./entities/characters/player/movement_logic/platformer_movement.gd
 extends Node
 
-@onready var player = get_parent().get_parent() # Ссылка на CharacterBody2D
-@export var speed: float = 110.0
-var enabled: bool = false
+@onready var player: CharacterBody2D = get_parent().get_parent()
 
-func execute(_delta):
+@export var speed: float = 120.0
+@export var acceleration: float = 700.0
+@export var friction: float =  1000.0
+
+@export var penguin_speed: float = 320.0
+@export var penguin_acceleration: float = 225.0
+@export var penguin_friction: float = 200.0
+
+@export var jump_velocity: float = -185.0
+@export var penguin_jump_velocity: float = -130.0
+@export var gravity: float = 700.0
+@export var fall_multiplier: float = 1.5
+@export var max_fall_speed: float = 380.0
+
+@export var coyote_time: float = 0.1
+@export var jump_buffer_time: float = 0.1
+
+var enabled: bool = false
+var coyote_timer: float = 0.0
+var jump_buffer_timer: float = 0.0
+
+func execute(delta: float) -> void:
 	if not enabled: return
-	
-	var direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
-	
-	player.velocity = direction * speed
+
+	var is_penguin: bool = player.is_penguin
+
+	coyote_timer = coyote_time if player.is_on_floor() else maxf(coyote_timer - delta, 0.0)
+
+	if Input.is_action_just_pressed("jump"):
+		jump_buffer_timer = jump_buffer_time
+	else:
+		jump_buffer_timer = maxf(jump_buffer_timer - delta, 0.0)
+
+	if jump_buffer_timer > 0.0 and coyote_timer > 0.0:
+		player.velocity.y = penguin_jump_velocity if is_penguin else jump_velocity
+		coyote_timer = 0.0
+		jump_buffer_timer = 0.0
+
+	if not player.is_on_floor():
+		var current_gravity := gravity * fall_multiplier if player.velocity.y > 0.0 else gravity
+		player.velocity.y = minf(player.velocity.y + current_gravity * delta, max_fall_speed)
+
+	var max_speed := penguin_speed if is_penguin else speed
+	var accel := penguin_acceleration if is_penguin else acceleration
+	var slow_down := penguin_friction if is_penguin else friction
+
+	var dir := Input.get_axis("ui_left", "ui_right")
+	if dir != 0.0:
+		player.velocity.x = move_toward(player.velocity.x, dir * max_speed, accel * delta)
+		player.set_horizontal_facing(dir)
+	else:
+		player.velocity.x = move_toward(player.velocity.x, 0.0, slow_down * delta)
+
 	player.move_and_slide()
 
 <!<ENDOFFILE!<<
@@ -958,52 +1158,26 @@ func _fail_feedback() -> void:
 	
 
 <!<ENDOFFILE!<<
->>!>FILEPATH: ./entities/characters/player/movement_logic/platformer_movement.gd
+>>!>FILEPATH: ./entities/characters/player/movement_logic/free_movement.gd
 extends Node
 
-@onready var player: CharacterBody2D = get_parent().get_parent()
-
-@export var speed: float = 120.0
-@export var acceleration: float = 700.0
-@export var friction: float =  1000.0
-
-@export var jump_velocity: float = -185.0
-@export var gravity: float = 700.0
-@export var fall_multiplier: float = 1.5
-@export var max_fall_speed: float = 380.0
-
-@export var coyote_time: float = 0.1
-@export var jump_buffer_time: float = 0.1
-
+@onready var player = get_parent().get_parent()
+@export var speed: float = 110.0
+@export var penguin_speed: float = 320.0
+@export var penguin_acceleration: float = 200.0
+@export var penguin_friction: float = 180.0
 var enabled: bool = false
-var coyote_timer: float = 0.0
-var jump_buffer_timer: float = 0.0
 
-func execute(delta: float) -> void:
+func execute(delta):
 	if not enabled: return
 
-	coyote_timer = coyote_time if player.is_on_floor() else maxf(coyote_timer - delta, 0.0)
+	var direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 
-	if Input.is_action_just_pressed("jump"):
-		jump_buffer_timer = jump_buffer_time
+	if player.is_penguin:
+		var rate := penguin_acceleration if direction != Vector2.ZERO else penguin_friction
+		player.velocity = player.velocity.move_toward(direction * penguin_speed, rate * delta)
 	else:
-		jump_buffer_timer = maxf(jump_buffer_timer - delta, 0.0)
-
-	if jump_buffer_timer > 0.0 and coyote_timer > 0.0:
-		player.velocity.y = jump_velocity
-		coyote_timer = 0.0
-		jump_buffer_timer = 0.0
-
-	if not player.is_on_floor():
-		var current_gravity := gravity * fall_multiplier if player.velocity.y > 0.0 else gravity
-		player.velocity.y = minf(player.velocity.y + current_gravity * delta, max_fall_speed)
-
-	var dir := Input.get_axis("ui_left", "ui_right")
-	if dir != 0.0:
-		player.velocity.x = move_toward(player.velocity.x, dir * speed, acceleration * delta)
-		player.set_horizontal_facing(dir)
-	else:
-		player.velocity.x = move_toward(player.velocity.x, 0.0, friction * delta)
+		player.velocity = direction * speed
 
 	player.move_and_slide()
 
@@ -1323,7 +1497,46 @@ func _on_body_entered(body: Node2D) -> void:
 		
 
 <!<ENDOFFILE!<<
->>!>FILEPATH: ./core/systems/game_manager.gd
+>>!>FILEPATH: ./core/dialogue_interactable.gd
+extends StaticBody2D
+class_name DialogueInteractable
+
+
+@export_category("Dialogue")
+@export var dialogue_resource: DialogueResource
+@export var dialogue_title: String = "start"
+
+
+var _dialogue_active := false
+
+
+func interact(interactor: Node):
+	if _dialogue_active:
+		return
+
+	if dialogue_resource == null:
+		push_warning("%s: dialogue_resource не назначен" % name)
+		return
+
+	_dialogue_active = true
+
+	if interactor.has_method("set_controls_enabled"):
+		interactor.set_controls_enabled(false)
+
+	DialogueManager.show_dialogue_balloon(
+		dialogue_resource,
+		dialogue_title
+	)
+
+	await DialogueManager.dialogue_ended
+
+	if is_instance_valid(interactor) and interactor.has_method("set_controls_enabled"):
+		interactor.set_controls_enabled(true)
+
+	_dialogue_active = false
+
+<!<ENDOFFILE!<<
+>>!>FILEPATH: ./core/game_manager.gd
 extends Node
 
 signal health_changed(new_health: int)
@@ -1393,46 +1606,7 @@ func stop_all_music() -> void:
 			
 
 <!<ENDOFFILE!<<
->>!>FILEPATH: ./core/systems/dialogue_interactable.gd
-extends StaticBody2D
-class_name DialogueInteractable
-
-
-@export_category("Dialogue")
-@export var dialogue_resource: DialogueResource
-@export var dialogue_title: String = "start"
-
-
-var _dialogue_active := false
-
-
-func interact(interactor: Node):
-	if _dialogue_active:
-		return
-
-	if dialogue_resource == null:
-		push_warning("%s: dialogue_resource не назначен" % name)
-		return
-
-	_dialogue_active = true
-
-	if interactor.has_method("set_controls_enabled"):
-		interactor.set_controls_enabled(false)
-
-	DialogueManager.show_dialogue_balloon(
-		dialogue_resource,
-		dialogue_title
-	)
-
-	await DialogueManager.dialogue_ended
-
-	if is_instance_valid(interactor) and interactor.has_method("set_controls_enabled"):
-		interactor.set_controls_enabled(true)
-
-	_dialogue_active = false
-
-<!<ENDOFFILE!<<
->>!>FILEPATH: ./core/systems/inventory.gd
+>>!>FILEPATH: ./core/inventory.gd
 extends Node
 
 signal changed
@@ -1492,7 +1666,7 @@ func print_inventory() -> void:
 	
 
 <!<ENDOFFILE!<<
->>!>FILEPATH: ./core/systems/game_state.gd
+>>!>FILEPATH: ./core/game_state.gd
 extends Node
 
 signal world_state_changed(object_id: String, key: String, value: Variant)
@@ -1500,6 +1674,7 @@ signal world_state_changed(object_id: String, key: String, value: Variant)
 var current_level_path: String = ""
 var current_checkpoint_id: String = ""
 var current_mode: StringName = &"free"
+var is_penguin: bool = false
 
 var character_states: Dictionary = {}
 var dialogue_states: Dictionary = {}
@@ -1538,10 +1713,10 @@ func clear_all() -> void:
 	dialogue_states.clear()
 	world_states.clear()
 	current_mode = &"free"
-	
+	is_penguin = false
 
 <!<ENDOFFILE!<<
->>!>FILEPATH: ./core/systems/rhythm_engine/rhythm_engine.gd
+>>!>FILEPATH: ./core/rhythm_engine/rhythm_engine.gd
 extends CanvasLayer
 
 signal beat(index)

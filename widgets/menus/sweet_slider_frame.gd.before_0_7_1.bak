@@ -1,0 +1,32 @@
+extends PanelContainer
+class_name SweetSliderFrame
+
+func _ready() -> void:
+    texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+    add_theme_stylebox_override("panel", SweetUI.make_box(
+        SweetUI.CONFIG.background, SweetUI.CONFIG.border, -1, -1, 6, 5))
+    var slider := get_child(0) as HSlider
+    if slider == null:
+        return
+    slider.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+    slider.custom_minimum_size.y = 17
+    var cfg := SweetUI.CONFIG
+    slider.add_theme_stylebox_override("slider", SweetUI.make_box(
+        cfg.slider_track, cfg.border, cfg.corner_pixels, 1, 0, 0))
+    slider.add_theme_stylebox_override("grabber_area", SweetUI.make_box(
+        cfg.slider_fill, cfg.border, cfg.corner_pixels, 1, 0, 0))
+    slider.add_theme_stylebox_override("grabber_area_highlight", SweetUI.make_box(
+        cfg.hover, cfg.border, cfg.corner_pixels, 1, 0, 0))
+    slider.add_theme_icon_override("grabber", _knob(cfg.slider_handle, cfg.border))
+    slider.add_theme_icon_override("grabber_highlight", _knob(cfg.hover, cfg.border))
+    slider.add_theme_icon_override("grabber_disabled", _knob(cfg.disabled, cfg.border))
+
+func _knob(fill: Color, border_color: Color) -> Texture2D:
+    var image := Image.create(11, 15, false, Image.FORMAT_RGBA8)
+    image.fill(Color.TRANSPARENT)
+    for y in range(15):
+        for x in range(11):
+            if (x < 2 and y < 2) or (x > 8 and y < 2) or (x < 2 and y > 12) or (x > 8 and y > 12):
+                continue
+            image.set_pixel(x, y, border_color if x < 1 or x > 9 or y < 1 or y > 13 else fill)
+    return ImageTexture.create_from_image(image)

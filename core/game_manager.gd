@@ -40,8 +40,14 @@ func take_damage(amount: int) -> bool:
 	return true
 
 func restart_game() -> void:
+	if SaveManager.restore_game():
+		return
 	current_health = max_health
 	is_invulnerable = false
+	if GameState.request_checkpoint_respawn():
+		if get_tree().change_scene_to_file(GameState.checkpoint_level_path) == OK:
+			return
+		GameState.resume_at_checkpoint = false
 	get_tree().reload_current_scene()
 
 func _fade(target_alpha: float, duration: float = 0.3) -> Signal:
@@ -53,15 +59,9 @@ func load_level(path: String) -> void:
 	await _fade(1.0)
 	if get_tree().change_scene_to_file(path) != OK:
 		push_error("Не удалось загрузить уровень: " + path)
+		is_invulnerable = false
 		_fade(0.0)
 		return
 	await get_tree().process_frame
+	is_invulnerable = false
 	await _fade(0.0)
-
-func stop_all_music() -> void:
-	for node in get_tree().get_nodes_in_group("music"):
-		if node is AudioStreamPlayer:
-			var tween := create_tween()
-			tween.tween_property(node, "volume_db", -80.0, 0.5)
-			tween.finished.connect(node.stop)
-			

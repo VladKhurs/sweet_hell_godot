@@ -1,0 +1,33 @@
+extends Control
+
+## Temporary entry point until SaveManager and SettingsManager are implemented.
+@export_file("*.tscn") var new_game_scene: String = "res://levels/0_forest/0_forest.tscn"
+
+@onready var play_button: Button = $Menu/Play
+@onready var settings_button: Button = $Menu/Settings
+@onready var exit_button: Button = $Menu/Exit
+@onready var notice: Label = $Notice
+@onready var confirm_panel: Control = $Confirm
+
+func _ready() -> void:
+    play_button.pressed.connect(_play)
+    settings_button.pressed.connect(_settings)
+    exit_button.pressed.connect(func(): confirm_panel.show())
+    $Confirm/Content/Buttons/Yes.pressed.connect(func(): get_tree().quit())
+    $Confirm/Content/Buttons/No.pressed.connect(func(): confirm_panel.hide())
+    confirm_panel.hide()
+    notice.hide()
+    play_button.grab_focus()
+
+func _play() -> void:
+    # Until SaveManager exists, pressing Play begins from the intro scene.
+    Game.load_level(new_game_scene)
+
+func _settings() -> void:
+    notice.text = "Настройки появятся в 0.5"
+    notice.show()
+
+func _unhandled_key_input(event: InputEvent) -> void:
+    if event.is_action_pressed("ui_cancel") and confirm_panel.visible:
+        confirm_panel.hide()
+        get_viewport().set_input_as_handled()

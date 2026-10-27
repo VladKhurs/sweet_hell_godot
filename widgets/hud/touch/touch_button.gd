@@ -14,6 +14,16 @@ func _gui_input(event: InputEvent) -> void:
 			touch_id = -1
 			_send_action(false)
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_PAUSED and touch_id != -1:
+		touch_id = -1
+		_send_action(false)
+
+func _exit_tree() -> void:
+	if touch_id != -1:
+		touch_id = -1
+		_send_action(false)
+
 func _send_action(is_pressed: bool) -> void:
 	if is_pressed:
 		Input.action_press(action_name)

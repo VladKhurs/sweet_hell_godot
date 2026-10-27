@@ -13,6 +13,13 @@
 [ext_resource type="Texture2D" uid="uid://5eixd6t8oxci" path="res://assets/images/characters/player_penguin/gg-penguin-bottom.png" id="10_2jd2e"]
 [ext_resource type="Texture2D" uid="uid://bvhf3wkqmnql6" path="res://assets/images/characters/player/gg-top.png" id="10_mnavw"]
 [ext_resource type="Texture2D" uid="uid://bppdhb061okr3" path="res://assets/images/characters/player/gg-right.png" id="11_nuxbo"]
+[ext_resource type="Script" uid="uid://0wl3uwrxsr6m" path="res://entities/characters/player/player_feedback.gd" id="12_feedback"]
+[ext_resource type="AudioStream" uid="uid://bovn5ees2thek" path="res://assets/sounds/gameplay/jump.wav" id="13_jump"]
+[ext_resource type="AudioStream" uid="uid://bnq4tlq1rl8sy" path="res://assets/sounds/gameplay/land.wav" id="14_land"]
+[ext_resource type="AudioStream" uid="uid://bajttkfto16j" path="res://assets/sounds/gameplay/attack.wav" id="15_attack"]
+[ext_resource type="AudioStream" uid="uid://cn4c5o25r0ctf" path="res://assets/sounds/gameplay/hit.wav" id="16_hit"]
+[ext_resource type="AudioStream" uid="uid://bfnkhjfufer01" path="res://assets/sounds/gameplay/hurt.wav" id="17_hurt"]
+[ext_resource type="AudioStream" uid="uid://bgyu4pvmx408r" path="res://assets/sounds/gameplay/transform.wav" id="18_transform"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_mnavw"]
 radius = 3.25
@@ -408,6 +415,7 @@ script = ExtResource("2_q57vx")
 
 [node name="platformer" type="Node" parent="Movements" unique_id=1507840491]
 script = ExtResource("3_q57vx")
+jump_release_multiplier = 1.0
 
 [node name="grid" type="Node" parent="Movements" unique_id=676329639]
 script = ExtResource("4_q57vx")
@@ -465,3 +473,21 @@ shape = SubResource("CircleShape2D_lq4vf")
 [node name="WeaponSprite" type="Sprite2D" parent="WeaponPivot" unique_id=1753571583]
 visible = false
 position = Vector2(6, 0)
+
+[node name="Feedback" type="Node" parent="." unique_id=1157314262]
+script = ExtResource("12_feedback")
+jump_sound = ExtResource("13_jump")
+land_sound = ExtResource("14_land")
+attack_sound = ExtResource("15_attack")
+hit_sound = ExtResource("16_hit")
+hurt_sound = ExtResource("17_hurt")
+transform_sound = ExtResource("18_transform")
+
+[node name="MoveAudio" type="AudioStreamPlayer" parent="Feedback" unique_id=554463536]
+volume_db = -9.0
+
+[node name="ActionAudio" type="AudioStreamPlayer" parent="Feedback" unique_id=483940112]
+volume_db = -10.0
+
+[node name="ImpactAudio" type="AudioStreamPlayer" parent="Feedback" unique_id=1889778068]
+volume_db = -8.0

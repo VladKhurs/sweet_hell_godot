@@ -24,7 +24,7 @@ func interact(interactor: Node):
 		interactor.set_controls_enabled(false)
 
 	DialogueManager.show_dialogue_balloon(
-		dialogue_resource,
+		DialogueLocale.resolve(dialogue_resource),
 		dialogue_title
 	)
 

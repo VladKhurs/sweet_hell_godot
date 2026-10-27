@@ -1,0 +1,16 @@
+[remap]
+
+importer="dialogue_manager"
+importer_version=15
+type="Resource"
+uid="uid://cnkxiko5sfcxh"
+path="res://.godot/imported/first_in_pub.dialogue-9b8707636796116de234ed8f46978314.tres"
+
+[deps]
+
+source_file="res://assets/dialogues_en/novels/first_in_pub.dialogue"
+dest_files=["res://.godot/imported/first_in_pub.dialogue-9b8707636796116de234ed8f46978314.tres"]
+
+[params]
+
+defaults=true

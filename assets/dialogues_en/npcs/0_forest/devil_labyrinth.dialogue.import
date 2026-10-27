@@ -1,0 +1,16 @@
+[remap]
+
+importer="dialogue_manager"
+importer_version=15
+type="Resource"
+uid="uid://ct0hwc5spsq8g"
+path="res://.godot/imported/devil_labyrinth.dialogue-75726eeefb7f2e2cc247f149bdfb0818.tres"
+
+[deps]
+
+source_file="res://assets/dialogues_en/npcs/0_forest/devil_labyrinth.dialogue"
+dest_files=["res://.godot/imported/devil_labyrinth.dialogue-75726eeefb7f2e2cc247f149bdfb0818.tres"]
+
+[params]
+
+defaults=true

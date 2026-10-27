@@ -1,0 +1,16 @@
+[remap]
+
+importer="dialogue_manager"
+importer_version=15
+type="Resource"
+uid="uid://cxm062gycrgi7"
+path="res://.godot/imported/lumi_alone.dialogue-ea43fa06d350cc02c9482f67eb5234a0.tres"
+
+[deps]
+
+source_file="res://assets/dialogues_ru/npcs/lumi_alone.dialogue"
+dest_files=["res://.godot/imported/lumi_alone.dialogue-ea43fa06d350cc02c9482f67eb5234a0.tres"]
+
+[params]
+
+defaults=true

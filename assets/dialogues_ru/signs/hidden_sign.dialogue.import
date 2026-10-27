@@ -1,0 +1,16 @@
+[remap]
+
+importer="dialogue_manager"
+importer_version=15
+type="Resource"
+uid="uid://8skheimclgv"
+path="res://.godot/imported/hidden_sign.dialogue-5e9d2319750142c7306183e4cc66d37d.tres"
+
+[deps]
+
+source_file="res://assets/dialogues_ru/signs/hidden_sign.dialogue"
+dest_files=["res://.godot/imported/hidden_sign.dialogue-5e9d2319750142c7306183e4cc66d37d.tres"]
+
+[params]
+
+defaults=true

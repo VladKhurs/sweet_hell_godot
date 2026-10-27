@@ -1,0 +1,32 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://entities/environment/checkpoint/checkpoint.gd" id="1_checkpoint"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_trigger"]
+size = Vector2(14, 16)
+
+[node name="Checkpoint" type="Area2D" groups=["sweet_checkpoints"]]
+collision_layer = 2
+collision_mask = 0
+script = ExtResource("1_checkpoint")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -8)
+shape = SubResource("RectangleShape2D_trigger")
+
+[node name="SpawnMarker" type="Marker2D" parent="."]
+position = Vector2(0, -12)
+
+[node name="Visual" type="Node2D" parent="."]
+
+[node name="Pole" type="Polygon2D" parent="Visual"]
+color = Color(0.263, 0.169, 0.282, 1)
+polygon = PackedVector2Array(-1, -10, 1, -10, 1, 0, -1, 0)
+
+[node name="FlagOutline" type="Polygon2D" parent="Visual"]
+color = Color(1, 0.835, 0.678, 1)
+polygon = PackedVector2Array(-5, -16, 3, -16, 5, -14, 5, -7, 3, -5, -5, -5)
+
+[node name="Flag" type="Polygon2D" parent="Visual"]
+color = Color(0.965, 0.404, 0.686, 1)
+polygon = PackedVector2Array(-4, -15, 2, -15, 4, -13, 4, -8, 2, -6, -4, -6)
