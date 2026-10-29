@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://xhrkjmbl76dc"]
 
 [ext_resource type="Script" uid="uid://d2mehgkkrajjh" path="res://entities/characters/npcs/base_npc/base_npc.gd" id="1_afoo8"]
-[ext_resource type="Resource" uid="uid://kcdh00kqogrb" path="res://assets/dialogues/npcs/old_man/old_man.dialogue" id="2_8hhr3"]
+[ext_resource type="Resource" uid="uid://b48syrkyh7b3f" path="res://assets/dialogues_ru/npcs/old_man/old_man.dialogue" id="2_8hhr3"]
 
 [node name="BaseNPC" type="StaticBody2D" unique_id=381813978]
 collision_layer = 2

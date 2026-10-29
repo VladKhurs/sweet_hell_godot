@@ -128,6 +128,6 @@ func _refresh() -> void:
 	_title.text = SettingsManager.tr_key("pause")
 	_resume_button.text = SettingsManager.tr_key("resume")
 	_exit_button.text = SettingsManager.tr_key("exit_menu")
-	_warning.text = SettingsManager.tr_key("exit_recent") if SaveManager.has_recent_save() else SettingsManager.tr_key("lose_progress")
+	_warning.text = SettingsManager.tr_key("lose_progress")
 	_yes_button.text = SettingsManager.tr_key("confirm_exit")
 	_cancel_button.text = SettingsManager.tr_key("cancel")

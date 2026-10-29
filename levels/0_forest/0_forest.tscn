@@ -9,7 +9,6 @@
 [ext_resource type="PackedScene" uid="uid://b5b6qq2wor7fd" path="res://levels/0_forest/image_before.tscn" id="4_0umrj"]
 [ext_resource type="PackedScene" uid="uid://cxco2tmuoio6h" path="res://levels/0_forest/country_devil.tscn" id="5_ur0xh"]
 [ext_resource type="PackedScene" uid="uid://1el24fwt6aww" path="res://entities/environment/portal/portal.tscn" id="6_3jrgk"]
-[ext_resource type="PackedScene" path="res://entities/environment/tutorial_hint/tutorial_hint.tscn" id="tutorial_hint_014"]
 
 [node name="BaseLevel" unique_id=2086354120 instance=ExtResource("1_2wod8")]
 level_mode = "platformer"
@@ -121,25 +120,5 @@ position = Vector2(568, 56)
 [node name="Portal" parent="." index="6" unique_id=1296805079 instance=ExtResource("6_3jrgk")]
 position = Vector2(4520, -264)
 target_level_path = "uid://bpwdnjwkoaiel"
-
-[node name="TutorialMove" parent="." instance=ExtResource("tutorial_hint_014")]
-position = Vector2(48, 60)
-hint_id = "first_forest_move"
-hint_kind = "move"
-
-[node name="TutorialJump" parent="." instance=ExtResource("tutorial_hint_014")]
-position = Vector2(210, 60)
-hint_id = "first_forest_jump"
-hint_kind = "jump"
-
-[node name="TutorialTransform" parent="." instance=ExtResource("tutorial_hint_014")]
-position = Vector2(375, 60)
-hint_id = "first_forest_transform"
-hint_kind = "transform"
-
-[node name="TutorialInteract" parent="." instance=ExtResource("tutorial_hint_014")]
-position = Vector2(527, 60)
-hint_id = "first_forest_interact"
-hint_kind = "interact"
 
 [editable path="BaseBackground"]
